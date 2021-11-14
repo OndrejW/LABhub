@@ -1,3 +1,17 @@
+# server
+__pycache__/
+alembic/
+database/
+logs/
+sql/
+whooshee/
+*.sublime-project
+*.sublime-workspace
+labhub/static/log/
+labhub/static/profile_pics/
+labhub/static/sample/
+labhub/static/setup/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
