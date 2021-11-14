@@ -1,0 +1,256 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+        <article class="media content-section">
+          <div class="media-body">
+            <h2>Dispersion relation of magnetic waveguide</h2>
+            <form class="" id="formCons">
+              {{ form.Msat.label(class="form-control-label") }}
+            <div class="input-group mb-3 input-group-lg">
+                    {% if form.Msat.errors %}
+                        {{ form.Msat(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.Msat.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.Msat(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text input-group-text-unit">{{ form.MsatUnits(class="form-control form-control-lg input-unit") }}</span>
+                    </div>
+                </div>
+                {{ form.extField.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.extField.errors %}
+                        {{ form.extField(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.extField.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.extField(class="form-control form-control-lg") }}   
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text input-group-text-unit">{{ form.extFieldUnits(class="form-control form-control-lg input-unit") }}</span>
+                    </div>
+                </div>
+                {{ form.thickness.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.thickness.errors %}
+                        {{ form.thickness(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.thickness.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.thickness(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">nm</span>
+                    </div>
+                </div>
+                {{ form.exchange.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.exchange.errors %}
+                        {{ form.exchange(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.exchange.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.exchange(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">{{ form.exchangeUnits(class="form-control form-control-lg input-unit") }}</span>
+                    </div>
+                </div>
+                {{ form.gamma.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.gamma.errors %}
+                        {{ form.gamma(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.gamma.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.gamma(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">GHz/T</span>
+                    </div>
+                </div>
+                {{ form.phi.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.phi.errors %}
+                        {{ form.phi(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.phi.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.phi(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">°</span>
+                    </div>
+                </div>
+                {{ form.theta.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.theta.errors %}
+                        {{ form.theta(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.theta.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.theta(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">°</span>
+                    </div>
+                </div>
+                {{ form.n.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.n.errors %}
+                        {{ form.n(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.n.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.n(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                {{ form.weff.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.weff.errors %}
+                        {{ form.weff(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.weff.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.weff(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">μm</span>
+                    </div>
+                </div>
+                {{ form.nT.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.nT.errors %}
+                        {{ form.nT(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.nT.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.nT(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                {{ form.boundaryCond.label(class="form-control-label") }}
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.boundaryCond.errors %}
+                        {{ form.boundaryCond(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.boundaryCond.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.boundaryCond(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <label class="form-control-label">Kxi (Start | Stop | Points)</label>
+                <div class="input-group mb-3 input-group-lg">
+                    {% if form.kxiStart.errors %}
+                        {{ form.kxiStart(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.kxiStart.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.kxiStart(class="form-control form-control-lg") }}
+                    {% endif %}
+                    {% if form.kxiStop.errors %}
+                        {{ form.kxiStop(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.kxiStop.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.kxiStop(class="form-control form-control-lg") }}
+                    {% endif %}
+                    {% if form.kxiPoints.errors %}
+                        {{ form.kxiPoints(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.kxiPoints.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.kxiPoints(class="form-control form-control-lg") }}
+                    {% endif %}
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">rad/μm</span>
+                    </div>
+                </div>
+              </form>
+              <div id="results"></div>
+          </div>
+        </article>
+
+        <script type="text/javascript">
+  $(document).ready(function() {
+    $('#formCons').change( function(event) {
+      $.ajax({
+        data : {
+          Msat : $('#Msat').val(),
+          thickness : $('#thickness').val(),
+          extField : $('#extField').val(),
+          exchange : $('#exchange').val(),
+          gamma : $('#gamma').val(),
+          extFieldUnits: $('#extFieldUnits').val(),
+          MsatUnits: $('#MsatUnits').val(),
+          exchangeUnits: $('#exchangeUnits').val(),
+          phi : $('#phi').val(),
+          theta : $('#theta').val(),
+          n : $('#n').val(),
+          nT : $('#nT').val(),
+          weff : $('#weff').val(),
+          boundaryCond : $('#boundaryCond').val(),
+          kxiStart : $('#kxiStart').val(),
+          kxiStop : $('#kxiStop').val(),
+          kxiPoints : $('#kxiPoints').val(),
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_dispersionWaveguide'
+      })
+      .done(function(data) {
+        $("#results").html(data)
+      });
+
+      event.preventDefault();
+
+    })
+    .change();
+  });
+</script>
+</div>
+{% endblock %}

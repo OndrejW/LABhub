@@ -1,0 +1,120 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+        {% if log.typeOfOcc == 1 %}
+          <article class="media content-section alert-info">
+        {% elif log.typeOfOcc == 2 %}
+          <article class="media content-section alert-warning">
+        {% elif log.typeOfOcc == 3 %}
+          <article class="media content-section alert-danger">
+        {% else %}
+          <article class="media content-section">
+        {% endif %}
+          <div class="wrap-article-img">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + log.operator.image_file) }}">
+          {% for cooperator in cooperators %}<img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + cooperator.image_file) }}">{% endfor%}
+          </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ log.operator.username }}</a>
+              <small class="text-muted">{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }}<button class="btn btn-outline-primary text-right d-print-none btn-sm ml-2" onclick="location.href='{{ url_for('update_log', log_id=log.id) }}'">Update</button><button class="btn btn-outline-primary d-print-none btn-sm ml-2" onclick="window.print();return false;">Print/export to pdf this log</button><button class="btn btn-outline-primary text-right d-print-none btn-sm ml-2" onclick="location.href='{{ url_for('add_RemarkToLog', log_id=log.id) }}'">Remark</button></small>
+            </div>
+            <h2 class="article-title">{{ log.name }}</h2>
+            {% if log.typeOfOcc != 1 and log.typeOfOcc != 2 and log.typeOfOcc != 3 %}
+              <p class="article-content"><b>Idea</b>: {{ log.idea }}</p>
+            {% endif %}
+            {% if log.typeOfOcc == 1 and log.typeOfOcc == 2 and log.typeOfOcc == 3 %}
+              <p class="article-content"><b>Description:</b> {{ log.comment }}</p>
+            {% else %}
+              <p class="article-content"><b>Comment:</b> {{ log.comment }}</p>
+            {% endif %}
+            <p class="article-content"><b>Path:</b> {{ log.path }}</p>
+            <p class="article-content"><b>Co-operators:</b> {% for cooperator in cooperators %}{{ cooperator.username }}{{ ", " if not loop.last }}{% endfor%} </p>
+            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
+            <p class="article-content"><b>Sample:</b>{% if log.sample %} <a href="{{ url_for('sample', sample_id=log.sample.id) }}"> {{ log.sample.name }} </a> {% endif %}</p>
+            <p class="article-content"><b>Structure:</b> {% if log.structure %}<a href="{{ url_for('structure', structure_id=log.structure.id) }}"> {{ log.structure.name }} </a> {% endif %}</p>
+            <p class="article-content"><b>Project:</b> {% if log.project %}  <a href="{{ url_for('project', project_id=log.project.id) }}"> {{ log.project.name }} </a>{% endif %}</p>
+            <p class="article-content"><b>Session:</b> {% if log.session %} <a href="{{ url_for('session', session_id=log.session.id) }}"> {{ log.session.name }} {% endif %}</a></p>
+            <table id="attributeTable" class="table table-striped">
+            <tr> <th>Attribute</th> <th>Value</th></tr>
+            {% for attr in attrTable %}
+              <tr><td>{{ attr[0] }}</td><td>{{ attr[1] }}</td></tr>
+            {% endfor %}
+            </table>
+            {% for image in log.images %}
+            <span class="InsertedImages">
+          <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe  }}">
+                <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"> 
+                <figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+          </a></span>
+            {% endfor %}
+          <h3>Remarks:</h3>
+            {% for remark in log.remarks %}
+              <div class="remark">
+                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + remark.remarker.image_file) }}">
+                <span class="remark-author"> <a class="mr-2 remark-author" href="#"> {{ remark.remarker.username }} </a> </span>
+              <div class="remark-text">{{ remark.remark }}</div>
+              {% if current_user.id == remark.user_id %}
+              <button type="button" id="delCross{{ remark.id }}" data-toggle="modal" data-target="#deleteModal{{ remark.id }}" class="mt-3 btn  btn-danger">Delete</button>
+              {% endif %}
+              </div>
+              <!-- Modal -->
+                      <div class="modal fade" id="deleteModal{{ remark.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ remark.id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel{{ remark.id }}">Delete this remark?</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body"><p>{{ remark.remark }}</p></div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="button" id="remarkDelBtn{{ remark.id }}" class="btn btn-danger" data-dismiss="modal" >Delete</button>
+                              <script type="text/javascript">
+                                  $( "#remarkDelBtn{{ remark.id }}").click(function() {
+                                    $.get("{{ url_for('delete_remark', remark_id=remark.id) }}");
+                                    $("#delCross{{ remark.id }}").parent().remove()
+                                    // $("#deleteModal").modal("hide"); 
+                                  })
+                              </script>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- End of modal -->
+            {% endfor %}
+          
+          </div>
+        </article>
+
+                                      <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete remark?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="#" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="text/javascript">
+  $(document).on("click", '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+  });
+</script>
+
+{% endblock %}

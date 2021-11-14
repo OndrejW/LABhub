@@ -1,0 +1,24 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+        <article class="media content-section">
+          <div class="media-body">
+          	<h1>Basics of LABhub</h1>
+          	This manual will lead you through basic logic of LABhub and will explain how to use main features.
+          	<h2>Registration and how to reach LABhub</h2>
+          	<p>You can register on this <a href="{{ url_for('register')}}">link</a>, but each time you want to acces LABhub it is neccesary to be on internal BUT VPN. This can be achieved by using PC inside BUT, or to be connected on BUT wifi (CEITEC wifi/BUT Eduroam). If you are outside BUT you can follow <a href="http://wifigw.cis.vutbr.cz/vpn/win10/">this manual</a>. This is neccesary, because of safety reasons.</p><p> Afterwards you should add your profile photo. This is done by clicking on the avatar in the right part of top menu, or by this <a href="{{ url_for('account')}}">link</a>.
+            <h2>Structure of data</h2>
+            <p>Logs/notes in LABhub can be either divided to so called <b>projects</b> or could be created without any category. Project should follow some scientific goal (e.g. investigation of propagtion of spin waves through domain walls.). </p> <p>Each project can be further divided to <b>sessions</b>. Idea behind sessions is to collect measurements which were conducted with specific goal inside project. Also we recomend to put to one sessions only measurements which were conducted not so far from each other (e.g. one week).</p> <p>Project can also contain logs/notes which aren't part of any sessions, but we strongly encourage you to put as many logs as possible to sessions. Whole data strucutre of project and sessions is concluded on the following diagram.</p>
+            <img src="{{ url_for('static', filename='manual/dataStructure.png') }}" class="img-fluid img-rounded">
+            <h2>Structure of log/note</h2>
+            <p><b>Idea</b> is for the reason why you conduct this measurement (e.g. find position of DW). In the <b>comment</b> you can write some special occasions or properties of the measurement (e.g. measueremtn takes aprox. 2 hours).</p><p> <b>Path</b> should contain path to the measured data.</p><p> If someone helps you with measurement you can add him/her as a <b>co-operator</b>. If you measure some <b>sample</b> (basicly every measurement expect setup characterization), you should add link on this sample from database. After you select sample, <b>structures</b> which are already on the sample become visible. You can either select one, left it empty (e.g. film measurements), or fill new one (it will be created during submiting of log). Same principle held also for <b>project</b> and <b>session</b>. After selecting project, sessions becames visible, but there is no possibility to create new session during submiting log.</p> <p> Each setup has predefined <b>attributes</b> (e.g. laser power). After selecting correct setup, you can load them by clicking on <i>Load attributes</i>. Afterwars you can add more attributes or delet unwated ones, by clicking on the cross.</p> <p><b>Pictures</b> can be added by drag and drop, pasting from clipboard (after clicking on rectangle), or with use of browse (on mobile phone there is also possibility to take image with camera). Each picture can have a title.</p>
+            <img src="{{ url_for('static', filename='manual/logStructure.png') }}" class="img-fluid img-rounded">
+            <h2>Sessions</h2>
+        	<p>In session view logs can be displayed eiter in ascending or descending order. In the top most log every information will be displayed, but in the next logs only informations which differs will be displayed. This feature is implemented to save space and to allow user to focus more on the important things during strategy loops.</p>
+        	<p>If you use <i>Add log to this session</i> or <i>Add note to this session</i>, information from last log/note will be prefilled in to the form. This is useful, becaouse usually between individual measuremnts not very much parameters are changed.</p>
+          </div>
+        </article>
+</div>
+{% endblock %}

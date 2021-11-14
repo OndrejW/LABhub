@@ -1,0 +1,45 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2 class="article-title">{{ project.name }}</h2>
+            <p class="article-content"><b>Date:</b> {{ project.date.strftime('%Y-%m-%d') }}</p>
+            <p class="article-content"><b>Description:</b> {{ project.desc }}</p>
+          </div>
+        </article>
+
+        <article class="media content-section">
+        	<table class="table table-striped">
+        		 <tr><th>Session</th><th>Idea</th><th>Findings</th></tr>
+        		 	{% for session in sessions %}
+        		 		<tr><td><a href="{{ url_for('session', session_id=session.id) }}"> {{session.name}}</a></td><td>{{session.idea}}</td><td>{{session.findings}}</td></tr>
+		 			{% endfor %}
+        	</table>
+        </article>
+
+    <div class="media content-section">
+        <table class="table table-striped">
+            <tr><th>Sample</th><th>Num. of measurements</th></tr>
+            {% for sample in samples %}
+                <tr><td><a href="{{ url_for('sample', sample_id=sample[0].id) }}"> {{sample[0].name}}</a></td><td> {{ sample[1] }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="content-section">
+        <h2>Users involved in project</h2>
+        <div class="chats">
+            {{ charts.usersInProjChart }}
+        </div>
+    </div>
+
+     <div class="content-section">
+        <h2>Setups involved in project</h2>
+        <div class="chats">
+            {{ charts.setupsInProjChart }}
+        </div>
+    </div>
+
+{% endblock %}

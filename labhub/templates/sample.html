@@ -1,0 +1,118 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+  <div id="overview">
+        <article class="media content-section">
+          <div class="wrap-article-img text-center label" id="LabelOfSample">
+            <img class="text-center" src="{{ qrcode( url_for('sample', sample_id=sample.id, _external=True), box_size = 2, error_correction='H' )  }}"> <br>
+            <span class="text-center">LH-id: {{ sample.id }}</span>
+            <span class="text-center small">{{ sample.name }}</span>
+            <button class="btn btn-outline-primary d-print-none btn-sample text-center" onclick="$('#LabelOfSample').printThis();">Print</button>
+          </div>
+          <div class="media-body position-relative">
+            <button class="btn btn-outline-primary mr-5 mt-5 position-absolute btn-sample d-print-none" onclick="location.href='{{ url_for('addLocation_sample', sample_id=sample.id) }}'">Add actual location of sample</button>
+            <button class="btn btn-outline-primary mr-5 position-absolute btn-sample d-print-none" onclick="location.href='{{ url_for('update_sample', sample_id=sample.id) }}'">Update</button>
+            <button class="btn btn-outline-primary mr-5 mt-10 position-absolute btn-sample d-print-none" style="margin-top: 6rem!important" onclick="$('#overview').printThis();">Print</button>
+            <h2 class="article-title">{{ sample.name }}</h2>
+            <p class="article-content"><b>Date:</b><br> {{ sample.date.strftime('%Y-%m-%d') }}</p>
+            <p class="article-content"><b>Description:</b> <br>{{ sample.desc }}</p>
+            <p class="article-content"><b>Drawer:</b> {% if sample.drawer %}  <a href="{{ url_for('drawer', drawer_id=sample.drawer.id) }}"> {{ sample.drawer.id }}: {{ sample.drawer.name }} </a>{% endif %}</p>
+            <table id="attributeTable" class="table table-striped">
+            <tr> <th>Attribute</th> <th>Value</th></tr>
+            {% for attr in attrTable %}
+              <tr><td>{{ attr[0] }}</td><td>{{ attr[1] }}</td></tr>
+            {% endfor %}
+            </table>
+
+            {% for image in sample.images %}
+            	<span class="InsertedImages">
+					<a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ sample.name }}">
+      					<img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox">
+                <figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+   					</a>
+   				</span>
+            {% endfor %}
+
+            <p class="article-content"><b>Structures on sample:</b>
+            <table class="table table-striped">
+            <tr> <th>Name</th> <th>Description</th><th>Images</th></tr>
+            {% for structure in structures %}
+             <tr><td><a href="{{ url_for('structure', structure_id=structure.id) }}">{{ structure.name }}</a></td><td> {{ structure.desc }}</td><td>{% for image in structure.images %}
+              <span class="StructureImages">
+          <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ structure.name }}">
+                <img src="{{ url_for('static', filename=image.path)  }}" class="StructureImages img-thumbnail mx-auto d-block">
+            </a>
+          </span>
+            {% endfor %}</td></tr>
+            {% endfor %}
+            </table>
+          </div>
+        </article>
+
+        <div class="content-section">
+  <h2>Locations of the sample</h2>
+  <table class="table table-striped">
+    <tr><th>Date</th> <th>Location</th></tr>
+  {% for location in sample.location|reverse  %}
+         <tr><td> {{ location.date.strftime('%Y-%m-%d') }} </td> <td> {{ location.location }}</td></tr>
+        {% endfor %}
+  </table>
+</div>
+
+  <div class="content-section">
+  <h2>Logs</h2>
+    <form id="formLimit" class="d-print-none">
+                  <div class="container-radio limit-radio">
+                    {% if form.limit.errors %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                        <div class="invalid-feedback">
+                            {% for error in form.limit.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                    {% endif %}
+                </div></form><br>
+  <div id="results">
+</div>
+</div>
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#formLimit').change( function(event) {
+      $.ajax({
+        data : {
+          idSample: {{ sample.id }},
+          limit: $("input[name='limit']:checked").val(),
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listLogsFiltered'
+      })
+      .done(function(data) {
+        $("#results").html(data)
+      });
+
+      event.preventDefault();
+
+    })
+    .change();
+  });
+</script>
+<script type="text/javascript">
+	$(document).on("click", '[data-toggle="lightbox"]', function(event) {
+	  event.preventDefault();
+	  $(this).ekkoLightbox();
+	});
+</script>
+{% endblock %}

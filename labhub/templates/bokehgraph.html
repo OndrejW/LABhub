@@ -1,0 +1,27 @@
+{{ script|safe }}
+{{ div|safe }}
+
+
+<script type="text/javascript">
+function download(filename) {
+  var text = "{% for kxi in kxis %}{{kxi}},{{fcs[loop.index-1]}}\n{% endfor %}";
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+</script>
+
+<form>
+	<div class="input-group form-inline">
+		<input type="text" id="nameOfFile" name="name" class="form-control form-control-lg mb-2 mr-sm-2" value="Dispersion.csv">
+		<input type="button" class="btn btn-secondary mb-2 mr-sm-2" value="Download" onclick="download(document.getElementById('nameOfFile').value )">
+	</div>
+</form>
+

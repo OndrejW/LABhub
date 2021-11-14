@@ -1,0 +1,97 @@
+ <div>
+	{% for log in logs %}
+    {% if log.typeOfOcc == 1 %}
+        <article class="media content-section alert-info">
+          <div class="wrap-article-img">
+            <img class="rounded-circle article-img-list" src="{{ url_for('static', filename='profile_pics/' + log.operator.image_file) }}">
+            {% for cooperator in cooperators[loop.index-1] %}<img class="rounded-circle article-img-coops" src="{{ url_for('static', filename='profile_pics/' + cooperator.image_file) }}">{% endfor%}
+          </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('user_info', user_id=log.operator.id) }}">{{ log.operator.username }}</a>
+              <medium class="text-muted">{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }}</medium>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('log', log_id=log.id) }}">{{ log.name }}</a></h2>
+            <p><b>Description:</b> {{ log.comment }}</p>
+            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
+            {% for image in log.images %}
+             <span class="InsertedImages">
+              <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe }}">
+               <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"><figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+              </a>
+            </span>
+           {% endfor %}
+          </div>
+        </article>
+    {% elif log.typeOfOcc == 2 %}
+        <article class="media content-section alert-warning">
+          <div class="wrap-article-img">
+            <img class="rounded-circle article-img-list" src="{{ url_for('static', filename='profile_pics/' + log.operator.image_file) }}">
+            {% for cooperator in cooperators[loop.index-1] %}<img class="rounded-circle article-img-coops" src="{{ url_for('static', filename='profile_pics/' + cooperator.image_file) }}">{% endfor%}
+          </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('user_info', user_id=log.operator.id) }}">{{ log.operator.username }}</a>
+              <medium class="text-muted">{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }}</medium>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('log', log_id=log.id) }}">{{ log.name }}</a></h2>
+            <p><b>Description:</b> {{ log.comment }}</p>
+            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
+            {% for image in log.images %}
+             <span class="InsertedImages">
+              <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe }}">
+               <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"><figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+              </a>
+            </span>
+           {% endfor %}
+          </div>
+        </article>
+    {% elif log.typeOfOcc == 3 %}
+        <article class="media content-section alert-danger">
+          <div class="wrap-article-img">
+            <img class="rounded-circle article-img-list" src="{{ url_for('static', filename='profile_pics/' + log.operator.image_file) }}">
+            {% for cooperator in cooperators[loop.index-1] %}<img class="rounded-circle article-img-coops" src="{{ url_for('static', filename='profile_pics/' + cooperator.image_file) }}">{% endfor%}
+          </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('user_info', user_id=log.operator.id) }}">{{ log.operator.username }}</a>
+              <medium class="text-muted">{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }}</medium>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('log', log_id=log.id) }}">{{ log.name }}</a></h2>
+            <p><b>Description:</b> {{ log.comment }}</p>
+            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
+            {% for image in log.images %}
+             <span class="InsertedImages">
+              <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe }}">
+               <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"><figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+              </a>
+            </span>
+           {% endfor %}
+          </div>
+        </article>
+    {% else %}
+        <article class="media content-section">
+          <div class="wrap-article-img">
+            <img class="rounded-circle article-img-list" src="{{ url_for('static', filename='profile_pics/' + log.operator.image_file) }}">
+            {% for cooperator in cooperators[loop.index-1] %}<img class="rounded-circle article-img-coops" src="{{ url_for('static', filename='profile_pics/' + cooperator.image_file) }}">{% endfor%}
+          </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('user_info', user_id=log.operator.id) }}">{{ log.operator.username }}</a>
+              <medium class="text-muted">{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }}</medium>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('log', log_id=log.id) }}">{{ log.name }}</a></h2>
+            <p><b>Idea:</b> {{ log.idea }}</p>
+            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
+            {% for image in log.images %}
+        <span class="InsertedImages">
+          <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe }}">
+              <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"><figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+          </a>
+      </span>
+    {% endfor %}
+          </div>
+        </article>
+    {% endif %} 
+  {% endfor %}
+</div>

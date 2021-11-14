@@ -1,0 +1,7 @@
+p4config.txt
+p4ignore.txt
+.svn
+.git
+.DS_Store
+.p4root
+*.swp

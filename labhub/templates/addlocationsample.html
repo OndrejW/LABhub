@@ -1,0 +1,30 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+  <div class="content-section">
+        <form method="POST" action="">
+        	{{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend>{{ legend }}</legend>
+                <div class="form-group">
+                    {{ form.location.label(class="form-control-label") }}
+                    {% if form.location.errors %}
+                        {{ form.location(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.location.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.location(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+            </fieldset> 
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

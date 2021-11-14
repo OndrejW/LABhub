@@ -1,0 +1,27 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+ 		<article class="media content-section">
+          <div class="media-body">
+            <h2><a class="article-title" href="{{ url_for('labSensor') }}">Lab sensors</a></h2>
+            <p><b>Description:</b> This tool shows temperature, humidity and dust density in magneto-optical laboratory. These values are tracked by Arduino.</p>
+          </div>
+        </article>
+
+        <article class="media content-section">
+          <div class="media-body">
+            <h2><a class="article-title" href="{{ url_for('dispersion') }}">Dispersion relation of thin film</a></h2>
+            <p><b>Description:</b> This tool will plot dispersion relation for thin films. It uses Slavin-Kalinikos equation with totally unpinned boundary condition. No pertrubation theory used.</p>
+          </div>
+        </article>
+
+        <article class="media content-section">
+          <div class="media-body">
+            <h2><a class="article-title" href="{{ url_for('dispersionWaveguide') }}">Dispersion relation of magnetic waveguide</a></h2>
+            <p><b>Description:</b> This tool will plot dispersion relation for thin magnetic waveguide. It uses Slavin-Kalinikos equation with totally unpinned boundary condition. No pertrubation theory used. <i>K</i> vector can be quantized in both, <i>z</i> and transverse direction.</p>
+          </div>
+        </article>
+</div>
+{% endblock %}

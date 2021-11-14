@@ -1,0 +1,17 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+	{% for project in projects %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ project.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('project', project_id=project.id) }}">{{ project.name }}</a></h2>
+          </div>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}

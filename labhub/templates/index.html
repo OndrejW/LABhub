@@ -1,0 +1,198 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+
+<form class="" id="formFilter">
+
+  <div class="input-group form-inline">
+    {% if form.project.errors %}
+    {{ form.project(class="form-control form-control-lg is-invalid mb-2 mr-sm-2", project="project") }}
+    <div class="invalid-feedback">
+      {% for error in form.project.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.project(class="form-control form-control-lg mb-2 mr-sm-2", id="project") }}
+    {% endif %}
+
+    {% if form.setup.errors %}
+    {{ form.setup(class="form-control form-control-lg is-invalid mb-2 mr-sm-2", setup="setup") }}
+    <div class="invalid-feedback">
+      {% for error in form.setup.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.setup(class="form-control form-control-lg mb-2 mr-sm-2", id="setup") }}
+    {% endif %}
+
+    {% if form.sample.errors %}
+    {{ form.sample(class="form-control form-control-lg is-invalid mb-2", sample="sample") }}
+    <div class="invalid-feedback">
+      {% for error in form.sample.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.sample(class="form-control form-control-lg mb-2", id="sample") }}
+    {% endif %}
+  </div>
+
+  <div class="input-group form-inline">
+          {{ form.session(class="form-control form-control-lg mb-2 mr-sm-2", id="session") }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('#project').change( function(event) {
+
+                $.ajax({
+                    data : {
+                        idProject : $('#project').val(),
+                    },
+                    type : 'GET',
+                    url : '/_listSessions'
+                })
+                .done(function(data) {
+                    if (data.error) {
+                        $("#session").empty();
+                        $("#session").append($("<option>").text("Select session").val(""));
+                    }
+                    else {
+                        $("#session").empty();
+                        $("#session").append($("<option>").text("Select session").val(""));
+                        $.each(data, function(key, option) {
+                            $("#session").append($("<option>").text(option.name).val(option.id));
+                        });
+                    }
+
+                });
+
+                event.preventDefault();
+
+            }).change();
+
+        });
+    </script>
+
+          {{ form.structure(class="form-control form-control-lg mb-2 mr-sm-2", id="structure") }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('#sample').change( function(event) {
+
+                $.ajax({
+                    data : {
+                        idSample : $('#sample').val(),
+                    },
+                    type : 'GET',
+                    url : '/_listStructures'
+                })
+                .done(function(data) {
+                    if (data.error) {
+                        $("#structure").empty();
+                        $("#invalid-feedback-ajax-structure").remove();
+                        $("#structure").append($("<option>").text("Select structure").val(""));
+                    }
+                    else {
+                        $("#structure").empty();
+                        $("#structure").append($("<option>").text("Select structure").val(""));
+                        $.each(data, function(key, option) {
+                            $("#structure").append($("<option>").text(option.name).val(option.id));
+                        });
+                    }
+
+                });
+
+                event.preventDefault();
+
+            }).change();
+
+        });
+    </script>
+
+      {% if form.user.errors %}
+    {{ form.user(class="form-control form-control-lg is-invalid mb-2", user="user") }}
+    <div class="invalid-feedback">
+      {% for error in form.user.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.user(class="form-control form-control-lg mb-2", id="user") }}
+    {% endif %}
+
+  </div>
+
+  <div class="input-group mb-3 input-group-lg">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search</span>
+    </div>
+    {% if form.ftSearch.errors %}
+    {{ form.ftSearch(class="form-control form-control-lg is-invalid", ftSearch="ftSearch") }}
+    <div class="invalid-feedback">
+      {% for error in form.ftSearch.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.ftSearch(class="form-control form-control-lg", id="ftSearch", placeholder="Search will start after 3 letters are typed.") }}
+    {% endif %}
+  </div>
+
+</form>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    $('#formFilter').on('input', function(event) { 
+      loadLogs(event, 1) 
+    }).trigger( "input" );
+
+    $(document).on('click', '.pagination_link', function(){  
+       var page = $(this).attr("id");  
+       loadLogs(event, page)   
+    }); 
+
+    function loadLogs(event, page) {
+
+      $.ajax({
+        data : {
+          idProject : $('#project').val(),
+          idSetup: $('#setup').val(),
+          idSample: $('#sample').val(),
+          idStructure: $('#structure').val(),
+          idSession: $('#session').val(),
+          idUser: $('#user').val(),
+          ftSearch: $('#ftSearch').val(),
+          page: page,
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listLogsFilteredPagination'
+      })
+      .done(function(data) {
+                $("#results").html(data)
+        });
+
+      event.preventDefault();
+      $("html, body").animate({ scrollTop: 0 }, "fast");
+
+    }
+
+  });
+</script>
+
+<div id="results">
+</div>
+
+<script type="text/javascript">
+  $(document).on("click", '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+  });
+</script>
+{% endblock %}

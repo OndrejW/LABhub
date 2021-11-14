@@ -1,0 +1,28 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+    <div class="content-section">
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ image_file }}">
+        <div class="media-body">
+          <h2 class="account-heading">{{ user.username }}</h2>
+          <p class="text-secondary">{{ user.email }}</p>
+        </div>
+      </div>   
+    </div>
+
+    <div class="content-section">
+        <h2>Setups used by user</h2>
+        <div class="chats">
+            {{ charts.setupsUsedByUserChart }}
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Projects in which is user involved</h2>
+        <div class="chats">
+            {{ charts.ProjectFromUserChart }}
+        </div>
+    </div>
+    {% endblock %}

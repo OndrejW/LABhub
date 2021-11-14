@@ -1,0 +1,74 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+  <div class="content-section">
+        <form method="POST" action="" enctype="multipart/form-data">
+        	{{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend>{{ legend }}</legend>
+                <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.desc.label(class="form-control-label") }}
+                    {% if form.desc.errors %}
+                        {{ form.desc(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.desc.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.desc(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.manuals.label(class="form-control-label") }}
+                    {% if form.manuals.errors %}
+                        {{ form.manuals(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.manuals.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.manuals(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.manualsName.label(class="form-control-label") }}
+                    {% if form.manualsName.errors %}
+                        {{ form.manualsName(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.manualsName.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.manualsName(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                    <br>
+                    {% import 'macros.html' as macros %}
+                    {{ macros.addAtributeSetup(form) }}
+
+                    {{ macros.addImage() }}
+
+            </fieldset> 
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {{ super() }}
+  <div>
+  	{% block content_main %}
+  	{% endblock %}
+  </div>
+{% endblock %}

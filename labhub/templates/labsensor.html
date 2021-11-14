@@ -1,0 +1,38 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2>Sensors in lab</h2>
+
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+              {{ form.day.label(class="form-control-label") }}
+            <div class="input-group mb-3 input-group-lg">
+                    {% if form.day.errors %}
+                        {{ form.day(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.day.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.day(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+              </form>
+
+            {{ script|safe }}
+            {{ div|safe }}
+
+            {{ scriptH|safe }}
+            {{ divH|safe }}
+
+        
+          </div>
+        </article>
+{% endblock %}

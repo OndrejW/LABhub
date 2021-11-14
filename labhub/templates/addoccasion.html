@@ -1,0 +1,328 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+  <div class="content-section">
+        <form method="POST" action="">
+        	{{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend>{{ title }}</legend>
+                <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid", placeholder="Name of occasion (e.g. contacting probes)") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg", placeholder="Name of occasion (e.g. contacting probes)") }}
+                    {% endif %}
+                </div>
+
+                <div class="container-radio">
+                    {{ form.typeOfOcc.label(class="form-control-label form-check-label") }} <br> 
+                    {% if form.typeOfOcc.errors %}
+                        {% for subfield in form.typeOfOcc %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                        <div class="invalid-feedback">
+                            {% for error in form.typeOfOcc.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.typeOfOcc %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.desc.label(class="form-control-label") }}
+                    {% if form.desc.errors %}
+                    <div class="has-error has-feedback">
+                        {{ form.desc(class="form-control form-control-lg has-error", placeholder="Description of occasion") }}
+                        <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <div class="help-block">
+                            {% for error in form.desc.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        </div>
+                    {% else %}
+                        {{ form.desc(class="form-control form-control-lg", placeholder="Description of occasion") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.project.label(class="form-control-label") }}
+                    {% if form.project.errors %}
+                        {{ form.project(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.project.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% if form.hid.data == 'addToSession' %}
+                            {{ form.project(class="form-control form-control-lg") }}
+                        {% else %}
+                            {{ form.project(class="form-control form-control-lg") }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group" id="form-group-session">
+                    {{ form.session.label(class="form-control-label") }}
+                    {% if form.session.errors %}
+                        {{ form.session(class="form-control form-control-lg is-invalid", id="session-input") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.session.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% if form.hid.data == 'addToSession' %}
+                            <select class="form-control form-control-lg" id="session-input" name="session">
+                                <option value="{{ form.session.data.id }}">{{ form.session.data.name }}</option>
+                            </select>
+                        {% else %}
+                            {{ form.session(class="form-control form-control-lg", id="session-input") }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% if form.hid.data != 'addToSession' %}
+                    <script type="text/javascript">
+                        $(document).ready(function() {
+
+                            $('#project').change( function(event) {
+
+                                $.ajax({
+                                    data : {
+                                        idProject : $('#project').val(),
+                                    },
+                                    type : 'GET',
+                                    url : '/_listSessions'
+                                })
+                                .done(function(data) {
+                                    if (data.error) {
+                                        $("#session-input").empty();
+                                        $("#invalid-feedback-ajax-session").remove();
+                                        $('#form-group-session').append($("<div class='invalid-feedback' id='invalid-feedback-ajax-session'>").append($("<span class='text-blue'>").text(data.error)));
+                                        $("#session-input").addClass('is-invalid border-color-blue')
+                                        $("#session-input").append($("<option>").text("").val(""));
+                                    }
+                                    else {
+                                        $("#session-input").empty();
+                                        $("#invalid-feedback-ajax-session").remove();
+                                        $("#session-input").removeClass('is-invalid border-color-blue')
+                                        $("#session-input").append($("<option>").text("").val(""));
+                                        $.each(data, function(key, option) {
+                                            $("#session-input").append($("<option>").text(option.name).val(option.id));
+                                        });
+                                    }
+
+                                });
+
+                                event.preventDefault();
+
+                            }).change();
+
+                        });
+                    </script>
+                {% endif %}
+
+                <div class="form-group">
+                    {{ form.cooperator.label(class="form-control-label") }}
+                    {% if form.cooperator.errors %}
+                        {{ form.cooperator(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.cooperator.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% if form.hid.data == 'addToSession' %}
+                            {{ form.cooperator(class="form-control form-control-lg") }}
+                        {% else %}
+                            {{ form.cooperator(class="form-control form-control-lg") }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+
+                <div class="form-group">
+                    {{ form.setup.label(class="form-control-label") }}
+                    {% if form.setup.errors %}
+                        {{ form.setup(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.setup.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.setup(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.sample.label(class="form-control-setlabel") }}
+                    {% if form.sample.errors %}
+                        {{ form.sample(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sample.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sample(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group" id="form-group-structure">
+                    {{ form.structure.label(class="form-control-label") }}
+                    {% if form.structure.errors %}
+                        {{ form.structure(class="form-control form-control-lg is-invalid", autocomplete="off") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.structure.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.structure(class="form-control form-control-lg", autocomplete="off", id="structure-input", list="structuresDatalist") }}
+                    {% endif %}
+                </div>
+
+<datalist id="structuresDatalist">
+</datalist>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $('#sample').change( function(event) {
+
+            $.ajax({
+                data : {
+                    idSample : $('#sample').val(),
+                },
+                type : 'GET',
+                url : '/_listStructures'
+            })
+            .done(function(data) {
+                if (data.error) {
+                    $("#structuresDatalist").empty();
+                    $("#invalid-feedback-ajax").remove();
+                    $('#form-group-structure').append($("<div class='invalid-feedback' id='invalid-feedback-ajax'>").append($("<span class='text-blue'>").text(data.error)));
+                    $("#structure-input").addClass('is-invalid border-color-blue')
+                }
+                else {
+                    $("#structuresDatalist").empty();
+                    $("#invalid-feedback-ajax").remove();
+                    $("#structure-input").removeClass('is-invalid border-color-blue')
+                    $.each(data, function(key, option) {
+                        $("#structuresDatalist").append($("<option>").text(option.name));
+                    });
+                }
+
+            });
+
+            event.preventDefault();
+
+        }).change();
+
+    });
+</script>
+
+                
+
+                {% import 'macros.html' as macros %}
+                {{ macros.addAtribute(form) }}
+                <button type="button" class="btn btn-secondary" onclick="loadAttribute()">Load attributes</button>
+
+                <!-- Image insert -->
+                {{ macros.addImage() }}
+            </fieldset>
+            {% if log is defined  %}
+                {% for image in log.images %}
+                    <span class="InsertedImages">
+                        <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe  }}">
+                        <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"> 
+                        <figcaption class="figure-caption text-center">{{ image.title }}</figcaption></a><button type="button" id="delCross{{ image.id }}" data-toggle="modal" data-target="#deleteModal{{ image.id }}" class="close delete-img mt-3" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </span>
+                        <!-- Modal -->
+                      <div class="modal fade" id="deleteModal{{ image.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ image.id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel{{ image.id }}">Delete picture with title {{ image.title }}?</h5>
+                              <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox"> 
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="button" id="imageDelBtn{{ image.id }}" class="btn btn-danger" data-dismiss="modal" >Delete</button>
+                              <script type="text/javascript">
+                                  $( "#imageDelBtn{{ image.id }}").click(function() {
+                                    $.get("{{ url_for('delete_logImage', image_id=image.id) }}");
+                                    $("#delCross{{ image.id }}").parent().remove()
+                                  })
+                              </script>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                {% endfor %}
+            {% endif %}
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary	") }}
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+            function loadAttribute() {
+            $.ajax({
+                data : {
+                    idSetup : $('#setup').val(),
+                },
+                type : 'GET',
+                url : '/_listSetupAttr'
+            })
+            .done(function(data) {
+                if (data.error) {
+
+                }
+                else {
+                    $.each(data, function(key, attr) {
+                        var table = document.getElementById("attributeTable");
+
+                      var lastRow = table.rows[ table.rows.length - 1 ];
+                      var lastInputName = lastRow.cells[0].getElementsByTagName('input')[0];
+                      if (lastInputName) {
+                        var r = /\d+/;
+                        var i = Number(lastInputName.name.match(r));
+                        i = i + 1;
+                      } else {
+                       var i = 0;
+                     }
+                     var row = table.insertRow(-1);
+                     var cell1 = row.insertCell(-1);
+                     var cell2 = row.insertCell(-1);
+                     var cell3 = row.insertCell(-1);
+                     cell1.innerHTML = "<label class=\"sr-only\" for=\"\">Attribute name:</label><input type=\"text\" class=\"form-control form-control-lg\" autocomplete=\"off\" name=\"attr-" + i + "-attrName\" value=\"" + attr.attrName + "\">";
+                     cell2.innerHTML = "<label class=\"sr-only\" for=\"\">Attribute value:</label><input type=\"text\" class=\"form-control form-control-lg\" autocomplete=\"off\" name=\"attr-" + i + "-attrValue\" value=\"" + attr.attrValue + "\">";
+                     cell3.innerHTML = "<button type=\"button\" onclick=\"$(this).parent().parent().remove()\" class=\"close align-middle\" aria-label=\"Close\">&times;</button>";
+                     cell3.classList.add("align-middle");
+                    });    
+                }
+
+            });
+            event.preventDefault();
+
+
+   }
+    </script>
+{% endblock %}
