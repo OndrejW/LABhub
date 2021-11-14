@@ -11,6 +11,7 @@ labhub/static/log/
 labhub/static/profile_pics/
 labhub/static/sample/
 labhub/static/setup/
+labhub/.p4root/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
