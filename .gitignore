@@ -13,6 +13,8 @@ labhub/static/sample/
 labhub/static/setup/
 labhub/.p4root/
 
+.p4root
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
