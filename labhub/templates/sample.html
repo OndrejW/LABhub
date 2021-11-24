@@ -11,9 +11,9 @@
             <button class="btn btn-outline-primary d-print-none btn-sample text-center" onclick="$('#LabelOfSample').printThis();">Print</button>
           </div>
           <div class="media-body position-relative">
-            <button class="btn btn-outline-primary mr-5 position-absolute btn-sample d-print-none" onclick="location.href='{{ url_for('update_sample', sample_id=sample.id) }}'">Update</button>
-            <button class="btn btn-outline-primary mr-5 mt-10 position-absolute btn-sample d-print-none" style="margin-top: 3rem!important" onclick="$('#overview').printThis();">Print</button>
-            <h2 class="article-title">{{ sample.name }}</h2>
+            <button class="btn btn-outline-primary mr-1 position-absolute btn-sample d-print-none" onclick="location.href='{{ url_for('update_sample', sample_id=sample.id) }}'">Update</button>
+            <button class="btn btn-outline-primary mr-1 mt-10 position-absolute btn-sample d-print-none" style="margin-top: 3rem!important" onclick="$('#overview').printThis();">Print</button>
+            <h2 class="article-title" style="max-width: 80%;">{{ sample.name }}</h2>
             <p class="article-content"><b>Date:</b><br> {{ sample.date.strftime('%Y-%m-%d') }}</p>
             <p class="article-content"><b>Description:</b> <br>{{ sample.desc }}</p>
             <p class="article-content"><b>Drawer:</b> {% if sample.drawer %}  <a href="{{ url_for('drawer', drawer_id=sample.drawer.id) }}"> {{ sample.drawer.number }}: {{ sample.drawer.name }} </a>{% endif %}</p>
