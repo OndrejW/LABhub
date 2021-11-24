@@ -1,0 +1,6 @@
+P4IGNORE=p4ignore.txt
+P4CHARSET=none
+P4INITROOT=$configdir
+P4USER=Ondrej_Wojewoda
+P4PORT=rsh:p4d.exe -i -J off -r "$configdir\.p4root"
+P4CLIENT=Ondrej_Wojewoda-dvcs-1567627298

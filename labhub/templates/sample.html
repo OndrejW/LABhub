@@ -17,7 +17,7 @@
             <h2 class="article-title">{{ sample.name }}</h2>
             <p class="article-content"><b>Date:</b><br> {{ sample.date.strftime('%Y-%m-%d') }}</p>
             <p class="article-content"><b>Description:</b> <br>{{ sample.desc }}</p>
-            <p class="article-content"><b>Drawer:</b> {% if sample.drawer %}  <a href="{{ url_for('drawer', drawer_id=sample.drawer.id) }}"> {{ sample.drawer.id }}: {{ sample.drawer.name }} </a>{% endif %}</p>
+            <p class="article-content"><b>Drawer:</b> {% if sample.drawer %}  <a href="{{ url_for('drawer', drawer_id=sample.drawer.id) }}"> {{ sample.drawer.number }}: {{ sample.drawer.name }} </a>{% endif %}</p>
             <table id="attributeTable" class="table table-striped">
             <tr> <th>Attribute</th> <th>Value</th></tr>
             {% for attr in attrTable %}
