@@ -444,7 +444,7 @@ def _listLogsFiltered():
     if tInfo and tInfo == '0':
         query = query.filter(Log.typeOfOcc != 1)
     if ftSearch and ftSearch != '__None':
-        query = query.whooshee_search(ftSearch, match_substrings=False)
+        query = query.whooshee_search(ftSearch, match_substrings=True)
     else:
         query = query.order_by(desc('date'))
     if limit and limit != '__None':
@@ -491,7 +491,7 @@ def _listLogsFilteredPagination():
     if tInfo and tInfo == '0':
         query = query.filter(Log.typeOfOcc != 1)
     if ftSearch and ftSearch != '__None':
-        query = query.whooshee_search(ftSearch, match_substrings=False)
+        query = query.whooshee_search(ftSearch, match_substrings=True)
     else:
         query = query.order_by(desc('date'))
     if limit and limit != '__None':
