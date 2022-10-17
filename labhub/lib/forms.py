@@ -294,6 +294,13 @@ class FilterLogs(FlaskForm):
         if project:
             raise ValidationError('Project with this name already exists.')
 
+class FilterSamples(FlaskForm):
+    """
+    Class validating creation of new measurement log.
+    """    
+    project = QuerySelectField("project", validators=[DataRequired()], query_factory=project_choices, allow_blank=True, blank_text=u"Select project")
+    ftSearch = TextField("full text sreach", validators=[Length(min=3, max=100)])
+
 class LimitOccs(FlaskForm):
     """
     Class validating creation of new measurement log.

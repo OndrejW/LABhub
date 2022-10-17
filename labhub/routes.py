@@ -29,7 +29,7 @@ import SpinWaveToolkit as SWT
 
 from labhub import app, db, bcrypt, whooshee, charts
 
-from labhub.lib.forms import LoginForm, AddMeasurementLog, RegistrationForm, UpdateAccountForm, AddSetup, AddSample, AddProject, Attribute, AddStructure, AddSession, FilterSession, AddOccasion, LimitOccs, AddLocationSample, FilterLogs, Dispersion, addRemarkToLog, DispersionWaveguide, LabSensorDay, AddDrawer
+from labhub.lib.forms import LoginForm, AddMeasurementLog, RegistrationForm, UpdateAccountForm, AddSetup, AddSample, AddProject, Attribute, AddStructure, AddSession, FilterSession, AddOccasion, LimitOccs, AddLocationSample, FilterLogs, Dispersion, addRemarkToLog, DispersionWaveguide, LabSensorDay, AddDrawer, FilterSamples
 from labhub.lib.pagination import Pagination
 from labhub.lib.models import User, Log, LogImages, Setup, SetupImages, Sample, SampleImages, Project, Structure, StructureImages, Session, LogCooperators, SampleLocations, SetupFiles, LogRemark, Drawer
 
@@ -46,6 +46,14 @@ def before_request_sidebar():
 @login_required
 def index():
     form = FilterLogs()
+    return render_template("index.html", title="Home page", form=form)
+
+@app.route("/reindex/")
+@login_required
+def reindex():
+    whooshee.reindex()
+    form = FilterLogs()
+    flash('The whooshee.reindex() was called successfully', 'success')
     return render_template("index.html", title="Home page", form=form)
 
 ##################
@@ -766,8 +774,27 @@ def addLocation_sample(sample_id):
 @app.route("/sample/list")
 @login_required
 def list_sample():
-    sample = Sample.query.order_by(desc('date')).all()
-    return render_template("listsample.html", title="List of samples", samples=sample)
+    form = FilterSamples()
+    return render_template("listsample.html", title="List of samples", form=form)
+
+@app.route('/_listSamplesFiltered', methods=['GET', 'POST'])
+def _listSamplesFiltered():
+    idProject = request.values.get('idProject')
+    ftSearch = request.values.get('ftSearch')
+    print(ftSearch)
+    query = Sample.query
+    # if idProject and idProject != '__None':
+    #     query = query.filter_by(project_id=idProject)
+    if ftSearch and ftSearch != '__None':
+        query = query.whooshee_search(ftSearch, match_substrings=True)
+    else:
+        query = query.order_by(desc('date'))
+
+    samples = query.all()
+    if samples:
+        return render_template("listsamplesfiltered.html", title="Filtered samples list", samples=samples)
+    else:
+        return 'There are not any samples yet!'
 
 @app.route("/drawer/<int:drawer_id>")
 @login_required

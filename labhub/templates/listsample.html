@@ -2,21 +2,68 @@
 
 {% block content_main %}
   {{ super() }}
- <div class="container">
-	{% for sample in samples %}
-        <article class="media content-section">
-          {% if sample.images[0] %}
-            <img class="rounded-circle article-img" src="{{ url_for('static', filename=sample.images[0].path)  }}">
-          {% else %}
-            <img class="rounded-circle article-img" src="{{ url_for('static', filename='sample/default.png')  }}">
-          {% endif %}
-          <div class="media-body">
-            <div class="article-metadata">
-              <small class="text-muted">{{ sample.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
-            </div>
-            <h2><a class="article-title" href="{{ url_for('sample', sample_id=sample.id) }}">{{ sample.name }}</a></h2>
-          </div>
-        </article>
-    {% endfor %}
+
+<form class="p-3" id="formFilter">
+
+  <div class="input-group form-inline">
+    {% if form.project.errors %}
+    {{ form.project(class="form-control form-control-lg is-invalid mb-2 mr-sm-2 w-25", project="project") }}
+    <div class="invalid-feedback">
+      {% for error in form.project.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.project(class="form-control form-control-lg mb-2 mr-sm-2", id="project") }}
+    {% endif %}
+
+    <div class="input-group-prepend">
+      <span class="input-group-text form-control form-control-lg mb-2">Search</span>
+    </div>
+    {% if form.ftSearch.errors %}
+    {{ form.ftSearch(class="form-control form-control-lg is-invalid", ftSearch="ftSearch") }}
+    <div class="invalid-feedback">
+      {% for error in form.ftSearch.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.ftSearch(class="form-control form-control-lg mb-2 mr-sm-2 w-50", id="ftSearch", placeholder="Search will start after 3 letters are typed.") }}
+    {% endif %}
+  </div>
+
+</form>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#formFilter').on('input', function(event) { 
+      loadSamples(event, 1) 
+    }).trigger( "input" );
+
+
+    function loadSamples(event, page) {
+      $.ajax({
+        data : {
+          idProject : $('#project').val(),
+          ftSearch: $('#ftSearch').val(),
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listSamplesFiltered'
+      })
+      .done(function(data) {
+                $("#results").html(data)
+        });
+
+      event.preventDefault();
+      $("html, body").animate({ scrollTop: 0 }, "fast");
+
+    }
+
+  });
+</script>
+
+<div id="results">
 </div>
+
 {% endblock %}

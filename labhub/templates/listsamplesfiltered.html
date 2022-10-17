@@ -1,0 +1,17 @@
+ <div class="container">
+	{% for sample in samples %}
+        <article class="media content-section">
+          {% if sample.images[0] %}
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename=sample.images[0].path)  }}">
+          {% else %}
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename='sample/default.png')  }}">
+          {% endif %}
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ sample.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('sample', sample_id=sample.id) }}">{{ sample.name }}</a></h2>
+          </div>
+        </article>
+    {% endfor %}
+</div>

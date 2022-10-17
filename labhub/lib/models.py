@@ -120,7 +120,9 @@ class SetupFiles(db.Model):
     def __repr__(self):
         return f"SetupFiles('{self.path}', '{self.title}')"
 
+@whooshee.register_model('name', 'desc', 'attribute')
 class Sample(db.Model):
+    # __searchable = ['name', 'desc', 'attribute']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now)
