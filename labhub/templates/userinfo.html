@@ -57,6 +57,7 @@
       $.ajax({
         data : {
           lastXdays: $("input[name='limit']:checked").val(),
+          idUsr: {{ user.id }},
         },
         type : 'GET',
         dataType : 'html',
