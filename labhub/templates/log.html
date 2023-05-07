@@ -8,6 +8,8 @@
           <article class="media content-section alert-warning">
         {% elif log.typeOfOcc == 3 %}
           <article class="media content-section alert-danger">
+        {% elif log.typeOfOcc == 4 %}
+          <article class="media content-section alert-dark">
         {% else %}
           <article class="media content-section">
         {% endif %}
@@ -26,22 +28,24 @@
             {% endif %}
             {% if log.typeOfOcc == 1 and log.typeOfOcc == 2 and log.typeOfOcc == 3 %}
               <p class="article-content"><b>Description:</b> {{ log.comment }}</p>
+            {% elif log.typeOfOcc == 4 %}
+              <p class="article-content"><b>Findings & comments:</b> {{ log.comment }}</p>
             {% else %}
               <p class="article-content"><b>Comment:</b> {{ log.comment }}</p>
             {% endif %}
             <p class="article-content"><b>Path:</b> {{ log.path }}</p>
-            <p class="article-content"><b>Co-operators:</b> {% for cooperator in cooperators %}{{ cooperator.username }}{{ ", " if not loop.last }}{% endfor%} </p>
-            <p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p>
-            <p class="article-content"><b>Sample:</b>{% if log.sample %} <a href="{{ url_for('sample', sample_id=log.sample.id) }}"> {{ log.sample.name }} </a> {% endif %}</p>
-            <p class="article-content"><b>Structure:</b> {% if log.structure %}<a href="{{ url_for('structure', structure_id=log.structure.id) }}"> {{ log.structure.name }} </a> {% endif %}</p>
+            <p class="article-content"><b>{% if log.typeOfOcc == 4 %} Co-analyst{% else %}Co-operators{% endif %}:</b> {% for cooperator in cooperators %}{{ cooperator.username }}{{ ", " if not loop.last }}{% endfor%} </p>
+            {% if log.used_setup is not none %}<p class="article-content"><b>Setup:</b> <a href="{{ url_for('setup', setup_id=log.used_setup.id) }}"> {{ log.used_setup.name }} </a></p> {% endif %}
+            {% if log.typeOfOcc != 4 %}<p class="article-content"><b>Sample:</b>{% if log.sample %} <a href="{{ url_for('sample', sample_id=log.sample.id) }}"> {{ log.sample.name }} </a> {% endif %}</p>
+            <p class="article-content"><b>Structure:</b> {% if log.structure %}<a href="{{ url_for('structure', structure_id=log.structure.id) }}"> {{ log.structure.name }} </a> {% endif %}</p> {% endif %}
             <p class="article-content"><b>Project:</b> {% if log.project %}  <a href="{{ url_for('project', project_id=log.project.id) }}"> {{ log.project.name }} </a>{% endif %}</p>
-            <p class="article-content"><b>Session:</b> {% if log.session %} <a href="{{ url_for('session', session_id=log.session.id) }}"> {{ log.session.name }} {% endif %}</a></p>
-            <table id="attributeTable" class="table table-striped">
+            {% if log.typeOfOcc != 4 %} <p class="article-content"><b>Session:</b> {% if log.session %} <a href="{{ url_for('session', session_id=log.session.id) }}"> {{ log.session.name }} {% endif %}</a></p> {% endif %}
+            {% if log.typeOfOcc != 4 %}<table id="attributeTable" class="table table-striped">
             <tr> <th>Attribute</th> <th>Value</th></tr>
             {% for attr in attrTable %}
               <tr><td>{{ attr[0] }}</td><td>{{ attr[1] }}</td></tr>
             {% endfor %}
-            </table>
+            </table>{% endif %}
             {% for image in log.images %}
             <span class="InsertedImages">
           <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ log.name|safe  }}">

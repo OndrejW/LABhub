@@ -12,6 +12,7 @@ nav.register_element(
         View(u"Home", ".index"), 
         View(u"New log entry", ".addMeasurementLog"),
         View(u"New note", ".addOccasion"),
+        View(u"New analysis", ".addAnalysis"),
         Subgroup(
             'Add',
             View(u"Session", ".addSession"),

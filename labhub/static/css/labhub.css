@@ -191,6 +191,10 @@ span.InsertedImages {
 .list-footer a:hover {
   color: LightGray;
 }
+/* Tables */
+.analysesTable tr:nth-child(4n+2), .analysesTable tr:nth-child(4n+3) {
+ background: #d6d8d9;
+}
 
 /* Inputs*/
 .input-unit {

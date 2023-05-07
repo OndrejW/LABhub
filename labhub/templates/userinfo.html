@@ -12,6 +12,31 @@
       </div>   
     </div>
 
+      <div class="content-section">
+  <h2>Logs in last X days</h2>
+      <form id="formLimit">
+                  <div class="container-radio limit-radio">
+                    {% if form.limit.errors %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                        <div class="invalid-feedback">
+                            {% for error in form.limit.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                    {% endif %}
+                </div></form><br>
+      <div id="results">
+      </div>
+    </div>
+
     <div class="content-section">
         <h2>Setups used by user</h2>
         <div class="chats">
@@ -25,4 +50,26 @@
             {{ charts.ProjectFromUserChart }}
         </div>
     </div>
+
+    <script type="text/javascript">
+  $(document).ready(function() {
+    $('#formLimit').change( function(event) {
+      $.ajax({
+        data : {
+          lastXdays: $("input[name='limit']:checked").val(),
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listLogsFiltered'
+      })
+      .done(function(data) {
+        $("#results").html(data)
+      });
+
+      event.preventDefault();
+
+    })
+    .change();
+  });
+</script>
     {% endblock %}

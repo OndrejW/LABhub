@@ -20,7 +20,7 @@ from bokeh.embed import components
 from bokeh.models import LinearAxis, Range1d, FixedTicker, AdaptiveTicker, ColumnDataSource
 from bokeh.models.tools import HoverTool
 from bokeh.layouts import column
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,7 @@ import SpinWaveToolkit as SWT
 
 from labhub import app, db, bcrypt, whooshee, charts
 
-from labhub.lib.forms import LoginForm, AddMeasurementLog, RegistrationForm, UpdateAccountForm, AddSetup, AddSample, AddProject, Attribute, AddStructure, AddSession, FilterSession, AddOccasion, LimitOccs, AddLocationSample, FilterLogs, Dispersion, addRemarkToLog, DispersionWaveguide, LabSensorDay, AddDrawer, FilterSamples
+from labhub.lib.forms import LoginForm, AddMeasurementLog, RegistrationForm, UpdateAccountForm, AddSetup, AddSample, AddProject, Attribute, AddStructure, AddSession, FilterSession, AddOccasion, LimitOccs, AddLocationSample, FilterLogs, Dispersion, addRemarkToLog, DispersionWaveguide, LabSensorDay, AddDrawer, FilterSamples, AddAnalysis, LimitLogsUser
 from labhub.lib.pagination import Pagination
 from labhub.lib.models import User, Log, LogImages, Setup, SetupImages, Sample, SampleImages, Project, Structure, StructureImages, Session, LogCooperators, SampleLocations, SetupFiles, LogRemark, Drawer
 
@@ -136,8 +136,8 @@ def account():
 @login_required
 def user_info(user_id):
     user = User.query.get_or_404(user_id)
+    form = LimitLogsUser()
     image_file = url_for('static', filename='profile_pics/' + user.image_file)
-
     # Pie chart of used setups and Projects
     usedSetupsbyUser = db.session.query(Setup.name, db.func.count(Log.setup_id)).join(Log, Setup.id == Log.setup_id).group_by(Setup.name).filter_by(user_id=user.id).all()
     setupsUsedByUserChart = PieChart("setupsUsedByUserChart", options={"width": '100%', "height": 500})
@@ -153,7 +153,7 @@ def user_info(user_id):
     ProjectFromUserChart .add_rows(ProjectFromUser)
     charts.register(ProjectFromUserChart)   
 
-    return render_template('userinfo.html', title='User info', image_file=image_file, user=user)
+    return render_template('userinfo.html', title='User info', image_file=image_file, user=user, form=form)
 
 @app.route("/users")
 @login_required
@@ -232,40 +232,55 @@ def update_log(log_id):
     log = Log.query.get_or_404(log_id)
     if log.typeOfOcc == 1 or log.typeOfOcc == 2 or log.typeOfOcc == 3:
         form=AddOccasion()
+    elif log.typeOfOcc == 4:
+        form=AddAnalysis()
     else:
         form = AddMeasurementLog()
     users = [(g.id, g.username) for g in User.query.order_by('username').filter(User.id != current_user.id).all()]
     form.cooperator.choices = users
     if form.validate_on_submit():
-        if form.sample.data:
-            structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
-            if not structure and form.structure.data != "":
-                descStruc = 'This structure was created during measurement with name ' + form.nameOfMeasurement.data
-                structure = Structure(name=form.structure.data, desc=descStruc, attribute='', sample_id=form.sample.data.id)
-                db.session.add(structure)
-                db.session.flush()
-        if hasattr(form.sample.data, 'id'):
-            structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
-        else:
-            structure = None
+        if log.typeOfOcc != 4:
+            if form.sample.data:
+                structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
+                if not structure and form.structure.data != "":
+                    descStruc = 'This structure was created during measurement with name ' + form.nameOfMeasurement.data
+                    structure = Structure(name=form.structure.data, desc=descStruc, attribute='', sample_id=form.sample.data.id)
+                    db.session.add(structure)
+                    db.session.flush()
+            if hasattr(form.sample.data, 'id'):
+                structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
+            else:
+                structure = None
         if log.typeOfOcc == 1 or log.typeOfOcc == 2 or log.typeOfOcc == 3:
             log.name = form.name.data
             log.comment = form.desc.data
             log.typeOfOcc = form.typeOfOcc.data
+            log.session_id = form.session.data
+            log.sample = form.sample.data
+            log.used_setup = form.setup.data
+            log.structure = structure
+            for entry in form.attr.entries:
+                attributes = attributes + entry.data['attrName'] + ',' + entry.data['attrValue'] + '\n'
+                log.attribute = attributes
+        elif log.typeOfOcc == 4:
+            log.name = form.name.data
+            log.comment = form.findings.data
+            log.idea = form.idea.data
+            log.path = form.path.data
         else:
             log.name = form.nameOfMeasurement.data
             log.comment = form.comment.data
             log.path = form.path.data
             log.idea = form.idea.data
+            log.session_id = form.session.data
+            log.sample = form.sample.data
+            log.used_setup = form.setup.data
+            log.structure = structure
+            attributes = ''
+            for entry in form.attr.entries:
+                attributes = attributes + entry.data['attrName'] + ',' + entry.data['attrValue'] + '\n'
+                log.attribute = attributes
         log.project = form.project.data
-        log.session_id = form.session.data
-        log.sample = form.sample.data
-        log.used_setup = form.setup.data
-        log.structure = structure
-        attributes = ''
-        for entry in form.attr.entries:
-            attributes = attributes + entry.data['attrName'] + ',' + entry.data['attrValue'] + '\n'
-            log.attribute = attributes
         if form.cooperator.data:
             for operator in form.cooperator.data:
                 logCooperator = LogCooperators(log_id=log.id, user_id=operator)
@@ -284,25 +299,43 @@ def update_log(log_id):
         if log.typeOfOcc == 1 or log.typeOfOcc == 2 or log.typeOfOcc == 3:
             form.name.data = log.name
             form.desc.data = log.comment
+            form.hid.data = log.id
+            form.session.data = log.session
+            form.sample.data = log.sample
+            form.setup.data = log.used_setup
+            form.structure.data = log.structure
+            test = csv.reader(StringIO(log.attribute), delimiter=',')
+            for row in test:
+                at = Attribute()
+                at.attrName.data = row[0]
+                at.attrValue.data = row[1]
+                form.attr.append_entry(at.data)
+        elif log.typeOfOcc == 4:
+            form.name.data = log.name
+            form.findings.data = log.comment
+            form.idea.data = log.idea
+            form.path.data = log.path
         else:
             form.nameOfMeasurement.data = log.name
             form.comment.data = log.comment
             form.path.data = log.path
             form.idea.data = log.idea
-        form.hid.data = log.id
+            form.hid.data = log.id
+            form.session.data = log.session
+            form.sample.data = log.sample
+            form.setup.data = log.used_setup
+            form.structure.data = log.structure
+            test = csv.reader(StringIO(log.attribute), delimiter=',')
+            for row in test:
+                at = Attribute()
+                at.attrName.data = row[0]
+                at.attrValue.data = row[1]
+                form.attr.append_entry(at.data)
         form.project.data = log.project
-        form.session.data = log.session
-        form.sample.data = log.sample
-        form.setup.data = log.used_setup
-        form.structure.data = log.structure
-        test = csv.reader(StringIO(log.attribute), delimiter=',')
-        for row in test:
-            at = Attribute()
-            at.attrName.data = row[0]
-            at.attrValue.data = row[1]
-            form.attr.append_entry(at.data)
     if log.typeOfOcc == 1 or log.typeOfOcc == 2 or log.typeOfOcc == 3:
         return render_template('addoccasion.html', title='Update log', form=form, log=log, legend='Update log')
+    elif log.typeOfOcc == 4:
+        return render_template('addanalysis.html', title='Update analysis', form=form, log=log, legend='Update analysis')
     else:
         return render_template('addmeasurementlog.html', title='Update log', form=form, log=log, legend='Update log')
 
@@ -436,6 +469,7 @@ def _listLogsFiltered():
     tLog = request.values.get('tLog')
     tInfo = request.values.get('tInfo')
     ftSearch = request.values.get('ftSearch')
+    lastXdays = int(request.values.get('lastXdays'))
     query = Log.query
     if idProject and idProject != '__None':
         query = query.filter_by(project_id=idProject)
@@ -453,6 +487,9 @@ def _listLogsFiltered():
         query = query.filter(Log.typeOfOcc != 1)
     if ftSearch and ftSearch != '__None':
         query = query.whooshee_search(ftSearch, match_substrings=True)
+    if lastXdays and lastXdays != '__None':
+        X_days_ago = datetime.today() - timedelta(days = lastXdays)
+        query = query.filter(Log.date >= X_days_ago)
     else:
         query = query.order_by(desc('date'))
     if limit and limit != '__None':
@@ -977,6 +1014,8 @@ def addProject():
 def project(project_id):
     project = Project.query.get_or_404(project_id)
     sessions = Session.query.order_by(desc('date')).filter_by(project_id=project.id)
+    # Analysis done within the project
+    analyses = Log.query.order_by(desc('date')).filter_by(project_id=project.id, typeOfOcc=4)
     # List of samples
     samplesInProj = db.session.query(Sample, db.func.count(Log.sample_id)).join(Log, Sample.id == Log.sample_id).group_by(Sample.name).filter_by(project_id=project.id).order_by(desc('date')).all()
     # Pie chart of users and setups involved in Project
@@ -994,7 +1033,7 @@ def project(project_id):
     setupsInProjChart.add_rows(setupsInProj)
     charts.register(setupsInProjChart)
 
-    return render_template('project.html', title=project.name, project=project, sessions=sessions, samples=samplesInProj)
+    return render_template('project.html', title=project.name, project=project, sessions=sessions, samples=samplesInProj, analyses=analyses)
 
 @app.route("/project/<int:project_id>/update", methods=['GET', 'POST'])
 @login_required
@@ -1230,6 +1269,37 @@ def addOccasionToSession(session_id):
         form.session.data = log.session
         form.hid.data = 'addToSession'
         return render_template("addoccasion.html", title="Add measurement log", form=form)
+##################
+# Analysis
+##################
+@app.route("/addAnalysis/", methods=['GET', 'POST'])
+@login_required
+def addAnalysis():
+    form = AddAnalysis()
+    users = [(g.id, g.username) for g in User.query.order_by('username').filter(User.id != current_user.id).all()]
+    form.cooperator.choices = users
+    if form.validate_on_submit():
+        log = Log(name=form.name.data, comment=form.findings.data, operator=current_user, project=form.project.data, path=form.path.data, idea=form.idea.data, typeOfOcc=4)
+        db.session.add(log)
+        db.session.flush()
+
+        if request.form.getlist('image[]'):
+            i = 0
+            for image in request.form.getlist('image[]'):
+                picture_file = save_log_picture(image, log.id)
+                logImages = LogImages(log_id=log.id, title=request.form.getlist('imageTitle[]')[i], path=picture_file)
+                i = i + 1
+                db.session.add(logImages)
+        if form.cooperator.data:
+            for operator in form.cooperator.data:
+                logCooperator = LogCooperators(log_id=log.id, user_id=operator)
+                db.session.add(logCooperator)
+
+        db.session.commit()
+        flash(f'Analysis was created with name: {form.name.data}!', 'success')
+        return redirect(url_for('index'))
+    return render_template("addanalysis.html", title="Add analysis", form=form)
+
 
 
 # Tools

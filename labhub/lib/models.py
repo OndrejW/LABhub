@@ -31,12 +31,12 @@ class Log(db.Model):
     comment = db.Column(db.Text)
     attribute  = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    setup_id = db.Column(db.Integer, db.ForeignKey('setup.id'), nullable=False)
+    setup_id = db.Column(db.Integer, db.ForeignKey('setup.id'), nullable=True)
     sample_id = db.Column(db.Integer, db.ForeignKey('sample.id'), nullable=True)
     structure_id = db.Column(db.Integer, db.ForeignKey('structure.id'), nullable=True, default='')
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=True)
-    # Types ~~~~ 0 - normal log, 1 - info, 2 - warning, 3 - error ~~~~~
+    # Types ~~~~ 0 - normal log, 1 - info, 2 - warning, 3 - error, 4 - analysis ~~~~~
     typeOfOcc = db.Column(db.Integer, nullable=True) 
 
     def __repr__(self):

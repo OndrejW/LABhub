@@ -153,6 +153,20 @@ class AddOccasion(FlaskForm):
             if not session and self.session.data != "":
                 raise ValidationError("This is not valid session for selected project.")
 
+class AddAnalysis(FlaskForm):
+    """
+    Class validating creation of new measurement log.
+    """    
+    name = TextField("name of analysis", validators=[Length(min=2, max=120), DataRequired()])
+    project = QuerySelectField("project", query_factory=project_choices, allow_blank=True, blank_text=u"Select project")
+    idea = TextAreaField("idea", validators=[Length(max=10485760)])
+    findings = TextAreaField("findings & comments", validators=[Length(max=10485760)])
+    path = TextAreaField("path", validators=[Length(max=10485760)])
+    cooperator = SelectMultipleField("Co-analyst", choices=[], coerce=int)
+    hid = HiddenField("hid")
+    submit = SubmitField("submit analysis")
+
+
 class AddSetup(FlaskForm):
     """
     Class validating creation of new measurement log.
@@ -306,6 +320,12 @@ class LimitOccs(FlaskForm):
     Class validating creation of new measurement log.
     """    
     limit = RadioField("type",default=25, validators=[DataRequired()], choices=[('5','5'), ('25','25'), ('100','100')])
+
+class LimitLogsUser(FlaskForm):
+    """
+    Class validating creation of new measurement log.
+    """    
+    limit = RadioField("type",default=7, validators=[DataRequired()], choices=[('7','7'), ('14','14'), ('30','30')])
 
 class Dispersion(FlaskForm):
     """

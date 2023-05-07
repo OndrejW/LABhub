@@ -5,6 +5,10 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='icons/site.webmanifest') }}">
 
     {% block styles %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/labhub.css') }}">
@@ -108,7 +112,7 @@
               <h3>Your recent logs</h3>
               <ul class="list-group">
                 {% for userLog in g.userLogs %}
-                  <li class="list-group-item list-group-item-light"><a href="{{ url_for('log', log_id=userLog.id) }}">{{ userLog.name }}</a> | <a href="{{ url_for('setup', setup_id=userLog.used_setup.id) }}">{{ userLog.used_setup.name }}</a></li>
+                  <li class="list-group-item list-group-item-light"><a href="{{ url_for('log', log_id=userLog.id) }}">{{ userLog.name }}</a> | {% if userLog.used_setup is not none %}<a href="{{ url_for('setup', setup_id=userLog.used_setup.id) }}">{{ userLog.used_setup.name }}</a></li> {% elif userLog.typeOfOcc==4 %} Analysis {% endif %}
                 {% endfor %}
               </ul>
           </div>
