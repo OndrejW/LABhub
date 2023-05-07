@@ -73,4 +73,11 @@
     .change();
   });
 </script>
+
+<script type="text/javascript">
+  $(document).on("click", '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+  });
+</script>
     {% endblock %}
