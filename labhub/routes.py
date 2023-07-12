@@ -1570,3 +1570,38 @@ def labSensor():
 @app.route("/manualBasics")
 def manualBasics():
     return render_template("manualBasics.html", title="Basics of LABhub")
+
+
+# @app.route("/CRMtest")
+# def CRMtest():
+#     import requests
+#     from requests_ntlm import HttpNtlmAuth
+#     import json
+     
+#     username = 'vutbr\\182743'
+#     userpassword = 'k_UsN6nE-2Ld5u'
+     
+#     #set these values to query your crm data
+#     crmwebapi = 'https://xrm.ceitec.cz/ceitec/api/data/v8.2'
+#     crmwebapiquery = '/contacts?$select=fullname,contactid'
+     
+#     crmrequestheaders = {
+#         'OData-MaxVersion': '4.0',
+#         'OData-Version': '4.0',
+#         'Accept': 'application/json',
+#         'Content-Type': 'application/json; charset=utf-8',
+#         'Prefer': 'odata.maxpagesize=500',
+#         'Prefer': 'odata.include-annotations=OData.Community.Display.V1.FormattedValue'
+#     }
+     
+#     print('making crm request . . .')
+#     crmres = requests.get(crmwebapi+crmwebapiquery, headers=crmrequestheaders,auth=HttpNtlmAuth(username,userpassword))
+#     print('crm response received . . .')
+#     print(crmres)
+#     try:
+#         print('parsing crm response . . .')
+#         crmresults = crmres.json()
+#         for x in crmresults['value']:
+#             print (x['fullname'] + ' - ' + x['contactid'])
+#     except KeyError:
+#         print('Could not parse CRM results')

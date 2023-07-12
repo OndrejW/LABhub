@@ -78,7 +78,7 @@ def sample_choices():
 def structure_choices():      
     return Structure.query.all()
 def project_choices():      
-    return Project.query.all()
+    return Project.query.order_by('name').all()
 def drawer_choices():      
     return Drawer.query.all()
 def user_choices():      
