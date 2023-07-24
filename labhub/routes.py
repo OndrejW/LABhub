@@ -354,7 +354,7 @@ def add_RemarkToLog(log_id):
         logRemark = LogRemark(log_id=log.id, remark=form.remark.data, user_id=current_user.id)
         db.session.add(logRemark)
         db.session.commit()
-        yag = yagmail.SMTP('labhubmagnetism@gmail.com',  oauth2_file="~/oauth2_creds.json")
+        yag = yagmail.SMTP('labhubmagnetism@gmail.com',  password="legxwujrfifonzan")
         contents = [
             "<h2>Hi,</h2>",
             "you get new Remark from user <b>{}</b>".format(current_user),
