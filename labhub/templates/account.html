@@ -42,6 +42,19 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
+                    {{ form.ceitec_guide.label(class="form-control-label") }}
+                    {% if form.ceitec_guide.errors %}
+                        {{ form.ceitec_guide(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.ceitec_guide.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.ceitec_guide(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {{ form.picture.label() }}
                     {{ form.picture(class="form-control-file") }}
                     {% if form.picture.errors %}

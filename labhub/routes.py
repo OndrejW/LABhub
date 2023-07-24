@@ -21,6 +21,8 @@ from bokeh.models import LinearAxis, Range1d, FixedTicker, AdaptiveTicker, Colum
 from bokeh.models.tools import HoverTool
 from bokeh.layouts import column
 from datetime import datetime, timedelta
+import requests
+import json
 
 import numpy as np
 import pandas as pd
@@ -123,12 +125,14 @@ def account():
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
+        current_user.ceitec_guide = form.ceitec_guide.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
+        form.ceitec_guide.data = current_user.ceitec_guide
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title=current_user.username, image_file=image_file, form=form)
 
@@ -316,6 +320,8 @@ def update_log(log_id):
             form.idea.data = log.idea
             form.path.data = log.path
         else:
+            print(type(log.sample))
+            print(dump(log.sample))
             form.nameOfMeasurement.data = log.name
             form.comment.data = log.comment
             form.path.data = log.path
@@ -348,7 +354,7 @@ def add_RemarkToLog(log_id):
         logRemark = LogRemark(log_id=log.id, remark=form.remark.data, user_id=current_user.id)
         db.session.add(logRemark)
         db.session.commit()
-        yag = yagmail.SMTP('labhubmagnetism@gmail.com')
+        yag = yagmail.SMTP('labhubmagnetism@gmail.com',  oauth2_file="~/oauth2_creds.json")
         contents = [
             "<h2>Hi,</h2>",
             "you get new Remark from user <b>{}</b>".format(current_user),
@@ -1572,36 +1578,121 @@ def manualBasics():
     return render_template("manualBasics.html", title="Basics of LABhub")
 
 
-# @app.route("/CRMtest")
-# def CRMtest():
-#     import requests
-#     from requests_ntlm import HttpNtlmAuth
-#     import json
+@app.route("/listceiteclogs")
+@login_required
+def listceiteclogs():
+
      
-#     username = 'vutbr\\182743'
-#     userpassword = 'k_UsN6nE-2Ld5u'
      
-#     #set these values to query your crm data
-#     crmwebapi = 'https://xrm.ceitec.cz/ceitec/api/data/v8.2'
-#     crmwebapiquery = '/contacts?$select=fullname,contactid'
+    headers = {
+        'accept': 'application/json',
+        'Auth-System-User': current_user.ceitec_guide,
+        'Accept': 'application/json'
+    }
      
-#     crmrequestheaders = {
-#         'OData-MaxVersion': '4.0',
-#         'OData-Version': '4.0',
-#         'Accept': 'application/json',
-#         'Content-Type': 'application/json; charset=utf-8',
-#         'Prefer': 'odata.maxpagesize=500',
-#         'Prefer': 'odata.include-annotations=OData.Community.Display.V1.FormattedValue'
-#     }
+    print('making request . . .')
+    res = requests.get('https://booking.ceitec.cz/api-public/logbook', headers=headers)
+
+    print('response received . . .')
+    try:
+        print('parsing crm response . . .')
+        results = res.json()
+        # print(json.dumps(results, indent=4, separators=(',', ': '), sort_keys=True))
+        recordings = results['data']['recordings']
+
+
+        class ImportLog:
+            def __init__(self, name, desc, date, link, equipment, log_guid):
+                self.name = name
+                self.desc = desc
+                self.date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                self.link = link
+                self.equipment = equipment
+                self.log_guid = log_guid
+        logs = []
+        for  i, recording in enumerate(recordings):
+            sessionID = recordings[recording]['ge_sessionid']['Id']
+            equipmentName = results['data']['sessions'][sessionID]['ge_equipmentid']['Name']
+            desc = recordings[recording]['ge_description'] if 'ge_description' in recordings[recording] else "Description not found"
+            logs.append(ImportLog(name=recordings[recording]['ge_name'], desc=desc, date=recordings[recording]['createdon'] , link=recordings[recording]['new_link'], equipment=equipmentName, log_guid = recording))
+    except KeyError:
+        print('Could not parse results')
+    return render_template("listceiteclogs.html", title="Import logs from CEITEC booking system", recordings=logs)
+
+@app.route("/addlogfromceitec/<log_guid>/add", methods=['GET', 'POST'])
+@login_required
+def addfromceitec_log(log_guid):
+    headers = {
+        'accept': 'application/json',
+        'Auth-System-User': current_user.ceitec_guide,
+        'Accept': 'application/json'
+    }
      
-#     print('making crm request . . .')
-#     crmres = requests.get(crmwebapi+crmwebapiquery, headers=crmrequestheaders,auth=HttpNtlmAuth(username,userpassword))
-#     print('crm response received . . .')
-#     print(crmres)
-#     try:
-#         print('parsing crm response . . .')
-#         crmresults = crmres.json()
-#         for x in crmresults['value']:
-#             print (x['fullname'] + ' - ' + x['contactid'])
-#     except KeyError:
-#         print('Could not parse CRM results')
+    res = requests.get("https://booking.ceitec.cz/api-public/logbook?recordings[]={}".format(log_guid), headers=headers)
+
+    try:
+        results = res.json()
+        recording = results['data']['recordings'][log_guid]
+        if 'samples' in results['data']:
+            sampleBooking = next(iter(results['data']['samples'][log_guid].values())) 
+        equipmentBooking = next(iter(results['data']['equipment'].values()))
+    except KeyError:
+        print('Could not parse results')
+
+
+    form = AddMeasurementLog()
+    users = [(g.id, g.username) for g in User.query.order_by('username').filter(User.id != current_user.id).all()]
+    form.cooperator.choices = users
+    if form.validate_on_submit():
+        if form.sample.data:
+            structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
+            if not structure and form.structure.data != "":
+                descStruc = 'This structure was created during measurement with name ' + form.nameOfMeasurement.data
+                structure = Structure(name=form.structure.data, desc=descStruc, attribute='', sample_id=form.sample.data.id)
+                db.session.add(structure)
+                db.session.flush()
+        if hasattr(form.sample.data, 'id'):
+            structure = Structure.query.filter_by(name=form.structure.data, sample_id=form.sample.data.id).first()
+        else:
+            structure = None
+        log = Log(name=form.nameOfMeasurement.data, idea=form.idea.data, comment=form.comment.data, path=form.path.data, operator=current_user, used_setup=form.setup.data, sample=form.sample.data, structure=structure, project=form.project.data, attribute=attributes, session_id=form.session.data, typeOfOcc=0)
+        db.session.add(log)
+        db.session.flush()
+
+        if request.form.getlist('image[]'):
+            i = 0
+            for image in request.form.getlist('image[]'):
+                picture_file = save_log_picture(image, log.id)
+                logImages = LogImages(log_id=log.id, title=request.form.getlist('imageTitle[]')[i], path=picture_file)
+                i = i + 1
+                db.session.add(logImages)
+        if form.cooperator.data:
+            for operator in form.cooperator.data:
+                logCooperator = LogCooperators(log_id=log.id, user_id=operator)
+                db.session.add(logCooperator)
+
+        db.session.commit()
+        flash(f'Log was created with name: {form.nameOfMeasurement.data}!', 'success')
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        if 'sampleBooking' in locals():
+            sample = Sample.query.filter_by(name=sampleBooking['ge_name']).first()
+        else:
+            sample = ""
+        setup = Setup.query.whooshee_search(equipmentBooking['ge_nameen'], match_substrings=True).first()
+        form.nameOfMeasurement.data = recording['ge_name']
+        form.comment.data = 'Created on: ' + recording['createdon']
+        form.path.data = recording['new_link']
+        form.idea.data = recording['ge_description']
+        form.session.data = ''
+        form.sample.data = sample
+        form.setup.data = setup
+        form.structure.data = ''
+        # test = csv.reader(StringIO(log.attribute), delimiter=',')
+        # for row in test:
+        #     at = Attribute()
+        #     at.attrName.data = row[0]
+        #     at.attrValue.data = row[1]
+        #     form.attr.append_entry(at.data)
+        form.project.data = ''
+        return render_template('addmeasurementlog.html', title='Update log', form=form, legend='Add log from CEITEC booking')

@@ -1,0 +1,20 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+	{% for recording in recordings %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ recording.date.strftime('%Y-%m-%d  %H:%M:%S') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('addfromceitec_log', log_guid=recording.log_guid) }}">{{ recording.name }}</a></h2>
+            <p><b>Description:</b> {{ recording.desc }}</p>
+            <p><b>Equipment:</b> {{ recording.equipment }}</p>
+            <p><b>Link:</b> <a href="{{ recording.link }}">{{ recording.link }}</a> </p>
+          </div>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}
