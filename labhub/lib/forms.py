@@ -56,6 +56,7 @@ class RegistrationForm(FlaskForm):
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    ceitec_guide = StringField('CEITEC guide', validators=[Length(max=60)])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
 
@@ -78,7 +79,7 @@ def sample_choices():
 def structure_choices():      
     return Structure.query.all()
 def project_choices():      
-    return Project.query.all()
+    return Project.query.order_by('name').all()
 def drawer_choices():      
     return Drawer.query.all()
 def user_choices():      

@@ -21,6 +21,7 @@ nav.register_element(
             View(u"Project", ".addProject"),
             View(u"Setup", ".addSetup"),
             View(u"Drawer", ".addDrawer"),
+            View(u"Import from CEITEC", ".listceiteclogs"),         
     ),
         Subgroup(
             'List',

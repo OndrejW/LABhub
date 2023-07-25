@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
+    ceitec_guide = db.Column(db.String(60), nullable=True)
     log = db.relationship('Log', backref='operator', lazy=True)
     logRemark = db.relationship('LogRemark', backref='remarker', lazy=True)
 
@@ -87,7 +88,9 @@ class Session(db.Model):
     def __repr__(self):
         return f"Session('{self.name}', '{self.date}')"
 
+@whooshee.register_model('name', 'desc')
 class Setup(db.Model):
+    # __searchable = ['name', 'desc']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(130), unique=True, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now)
