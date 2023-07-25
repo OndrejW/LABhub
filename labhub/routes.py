@@ -320,8 +320,6 @@ def update_log(log_id):
             form.idea.data = log.idea
             form.path.data = log.path
         else:
-            print(type(log.sample))
-            print(dump(log.sample))
             form.nameOfMeasurement.data = log.name
             form.comment.data = log.comment
             form.path.data = log.path
