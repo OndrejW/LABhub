@@ -1,0 +1,83 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+    <div class="content-section">
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ image_file }}">
+        <div class="media-body">
+          <h2 class="account-heading">{{ user.username }}</h2>
+          <p class="text-secondary">{{ user.email }}</p>
+        </div>
+      </div>   
+    </div>
+
+      <div class="content-section">
+  <h2>Logs in last X days</h2>
+      <form id="formLimit">
+                  <div class="container-radio limit-radio">
+                    {% if form.limit.errors %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                        <div class="invalid-feedback">
+                            {% for error in form.limit.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                    {% endif %}
+                </div></form><br>
+      <div id="results">
+      </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Setups used by user</h2>
+        <div class="chats">
+            {{ charts.setupsUsedByUserChart }}
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Projects in which is user involved</h2>
+        <div class="chats">
+            {{ charts.ProjectFromUserChart }}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+  $(document).ready(function() {
+    $('#formLimit').change( function(event) {
+      $.ajax({
+        data : {
+          lastXdays: $("input[name='limit']:checked").val(),
+          idUsr: {{ user.id }},
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listLogsFiltered'
+      })
+      .done(function(data) {
+        $("#results").html(data)
+      });
+
+      event.preventDefault();
+
+    })
+    .change();
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).on("click", '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+  });
+</script>
+    {% endblock %}

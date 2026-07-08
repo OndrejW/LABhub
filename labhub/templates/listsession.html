@@ -1,0 +1,87 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+<form class="form-inline" id="formFilter">
+  <div class="form-group">
+    {% if form.project.errors %}
+    {{ form.project(class="form-control form-control-lg is-invalid mb-2 mr-sm-2", project="project") }}
+    <div class="invalid-feedback">
+      {% for error in form.project.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.project(class="form-control form-control-lg mb-2 mr-sm-2", id="project") }}
+    {% endif %}
+  </div>
+
+  <div class="form-group">
+    {% if form.setup.errors %}
+    {{ form.setup(class="form-control form-control-lg is-invalid mb-2 mr-sm-2", setup="setup") }}
+    <div class="invalid-feedback">
+      {% for error in form.setup.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.setup(class="form-control form-control-lg mb-2 mr-sm-2", id="setup") }}
+    {% endif %}
+  </div>
+
+  <div class="form-group">
+    {% if form.sample.errors %}
+    {{ form.sample(class="form-control form-control-lg is-invalid mb-2 mr-sm-2", sample="sample") }}
+    <div class="invalid-feedback">
+      {% for error in form.sample.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    {{ form.sample(class="form-control form-control-lg mb-2 mr-sm-2", id="sample") }}
+    {% endif %}
+  </div>
+
+</form>
+
+
+ <div id="container">
+
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    $('#formFilter').change( function(event) {
+
+      $.ajax({
+        data : {
+          idProject : $('#project').val(),
+          idSetup: $('#setup').val(),
+          idSample: $('#sample').val(),
+        },
+        type : 'GET',
+        url : '/_listSessionsFiltered'
+      })
+      .done(function(data) {
+        if (data.error) {
+          $("#container").empty();
+        }
+        else {
+          $("#container").empty();
+          $.each(data, function(key, session) {
+            $("#container").append($("<article>").addClass("media content-section").append($("<div>").addClass("media-body").append($("<div>").addClass("article-metadata").append($("<small>").addClass("text-muted").text(moment(session.date).local().format("YYYY-MM-DD HH:mm:ss")))).append($("<h2>").append($("<a>").text(session.name).addClass("article-title").attr("href", Flask.url_for("session", {"session_id": session.id})))).append($("<p>").append($("<b>").text("Idea: ")).append(session.idea)).append($("<p>").append($("<b>").text("Findings: ")).append(session.findings))));
+          });
+        }
+
+      });
+
+      event.preventDefault();
+
+    }).change();
+
+  });
+</script>
+
+{% endblock %}

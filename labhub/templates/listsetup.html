@@ -1,0 +1,22 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+	{% for setup in setups %}
+        <article class="media content-section">
+          {% if setup.images[0] %}
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename=setup.images[0].path)  }}">
+          {% else %}
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename='setup/default.jpg')  }}">
+          {% endif %}
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ setup.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('setup', setup_id=setup.id) }}">{{ setup.name }}</a></h2>
+          </div>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+ <div class="container">
+	{% for drawer in drawers %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ drawer.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('drawer', drawer_id=drawer.id) }}">{{ drawer.number }}: {{ drawer.name }}</a></h2>
+            <p> {{drawer.desc }} </p>
+            <div class="list-group small">
+              {% for sample in drawer.sample %}
+            <a href="{{ url_for('sample', sample_id=sample.id) }}"class="list-group-item list-group-item-action py-1">
+              {{ sample.name }}
+            </a>
+              {% endfor %}
+          </div>
+          </div>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}

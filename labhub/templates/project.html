@@ -1,0 +1,71 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+        <article class="media content-section">
+          <div class="media-body">
+            <button class="btn btn-outline-primary text-right d-print-none btn-sm ml-2 float-right" onclick="location.href='{{ url_for('update_project', project_id=project.id) }}'">Update</button>
+            <h2 class="article-title">{{ project.name }}</h2>
+            <p class="article-content"><b>Date:</b> {{ project.date.strftime('%Y-%m-%d') }}</p>
+            <p class="article-content"><b>Description:</b> {{ project.desc }}</p>
+          </div>
+        </article>
+
+        <article class="media content-section">
+            <table class="table analysesTable">
+                 <tr><th>Analyses</th><th>Idea</th><th>Findings</th></tr>
+                    {% for analysis in analyses %}
+                        <tr><td><a href="{{ url_for('log', log_id=analysis.id) }}"> {{analysis.name}}</a></td><td>{{analysis.idea}}</td><td>{{analysis.comment}}</td></tr>
+                        <tr><td colspan="3">{% for image in analysis.images %}
+                            <span class="InsertedImages">
+                            <a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ analysis.name|safe }}">
+                            <img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox-homePage"><figcaption class="figure-caption text-center">{{ image.title }}</figcaption> 
+                            </a>
+                            </span>
+                            {% endfor %}  
+                        </td></tr>
+                    {% endfor %}
+            </table>
+        </article>
+
+        <article class="media content-section">
+        	<table class="table table-striped">
+        		 <tr><th>Session</th><th>Idea</th><th>Findings</th></tr>
+        		 	{% for session in sessions %}
+        		 		<tr><td><a href="{{ url_for('session', session_id=session.id) }}"> {{session.name}}</a></td><td>{{session.idea}}</td><td>{{session.findings}}</td></tr>
+		 			{% endfor %}
+        	</table>
+        </article>
+
+    <div class="media content-section">
+        <table class="table table-striped">
+            <tr><th>Sample</th><th>Num. of measurements</th></tr>
+            {% for sample in samples %}
+                <tr><td><a href="{{ url_for('sample', sample_id=sample[0].id) }}"> {{sample[0].name}}</a></td><td> {{ sample[1] }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="content-section">
+        <h2>Users involved in project</h2>
+        <div class="chats">
+            {{ charts.usersInProjChart }}
+        </div>
+    </div>
+
+     <div class="content-section">
+        <h2>Setups involved in project</h2>
+        <div class="chats">
+            {{ charts.setupsInProjChart }}
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+    $(document).on("click", '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2 class="article-title">{{ setup.name }}</h2>
+            <p class="article-content"><b>Date:</b> {{ setup.date.strftime('%Y-%m-%d') }}</p>
+            <p class="article-content"><b>Description:</b> {{ setup.desc }}</p>
+            {% for image in setup.images %}
+            	<span class="InsertedImages">
+					<a href="{{ url_for('static', filename=image.path)  }}" data-title="{{ image.title }}" data-toggle="lightbox" data-gallery="{{ setup.name }}">
+      					<img src="{{ url_for('static', filename=image.path)  }}" class="InsertedImages img-thumbnail mx-auto d-block imgThumbLightbox">
+   					</a>
+   				</span>
+            {% endfor %}
+          </div>
+        </article>
+
+<script type="text/javascript">
+	$(document).on("click", '[data-toggle="lightbox"]', function(event) {
+	  event.preventDefault();
+	  $(this).ekkoLightbox();
+	});
+</script>
+<div class="content-section">
+  <h2>Files/manuals</h2>
+  {% for file in setup.files %}
+    <figure class="icons-files">
+    <a href="{{ url_for('static', filename=file.path, _external=True)  }}">
+    <img src="{{ url_for('static', filename='icons/pdf.png')  }}" class="InsertedImages"></a>
+    <figcaption> {{ file.title }} </figcaption>
+  </figure>
+  {% endfor %}
+</div>
+<div class="content-section">
+  <h2>Warnings | Errors</h2>
+    <form id="formLimit">
+                  <div class="container-radio limit-radio">
+                    {% if form.limit.errors %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                        <div class="invalid-feedback">
+                            {% for error in form.limit.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.limit %}
+                                {{ subfield() }}
+                                {{ subfield.label(class="btn btn-radio btn-outline-info") }}
+                        {% endfor %}
+                    {% endif %}
+                </div></form><br>
+  <div id="results">
+</div>
+</div>
+
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#formLimit').change( function(event) {
+      $.ajax({
+        data : {
+          idSetup: {{ setup.id }},
+          tInfo: 0,
+          tLog: 0,
+          limit: $("input[name='limit']:checked").val(),
+        },
+        type : 'GET',
+        dataType : 'html',
+        url : '/_listLogsFiltered'
+      })
+      .done(function(data) {
+        $("#results").html(data)
+      });
+
+      event.preventDefault();
+
+    })
+    .change();
+  });
+</script>
+{% endblock %}

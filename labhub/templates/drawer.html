@@ -1,0 +1,31 @@
+{% extends "content.html" %}
+
+{% block content_main %}
+  {{ super() }}
+  <div id="overview">
+        <article class="media content-section">
+          <div class="wrap-article-img text-center label" id="LabelOfSample">
+            <img class="text-center" src="{{ qrcode( url_for('drawer', drawer_id=drawer.id, _external=True), box_size = 2, error_correction='H' )  }}"> <br>
+            <span class="text-center">LH-id: {{ drawer.id }}</span>
+            <span class="text-center small">{{ drawer.number }}: {{ drawer.name }}</span>
+            <button class="btn btn-outline-primary d-print-none btn-sample text-center" onclick="$('#LabelOfSample').printThis();">Print</button>
+          </div>
+          <div class="media-body position-relative">
+            <button class="btn btn-outline-primary mr-5  mt-5 position-absolute btn-sample d-print-none" onclick="location.href='{{ url_for('update_drawer', drawer_id=drawer.id) }}'">Update</button>
+            <button class="btn btn-outline-primary mr-5 mt-10 position-absolute btn-sample d-print-none" style="margin-top: 6rem!important" onclick="$('#overview').printThis();">Print</button>
+            <h2 class="article-title">{{ drawer.number }}: {{ drawer.name }}</h2>
+            <p class="article-content"><b>Date:</b><br> {{ drawer.date.strftime('%Y-%m-%d') }}</p>
+            <p class="article-content"><b>Description:</b> <br>{{ drawer.desc }}</p>
+
+
+            <p class="article-content"><b>Samples in drawer:</b> </p>
+            <table class="table table-striped">
+            <tr> <th>Name</th> <th>Description</th></tr>
+            {% for sample in samples %}
+              <tr class=""><td><a href="{{ url_for('sample', sample_id=sample.id) }}">{{ sample.name }}</a></td><td> <div style="max-height: 100px; overflow-y: scroll;"> {{ sample.desc }} </div></td></tr>
+            {% endfor %}
+            </table>
+          </div>
+        </article>
+</div>
+{% endblock %}
