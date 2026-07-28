@@ -39,16 +39,24 @@
 
     <div class="content-section">
         <h2>Setups used by user</h2>
+        {% if used_setups %}
         <div class="chats">
             {{ charts.setupsUsedByUserChart }}
         </div>
+        {% else %}
+        <p>No setup usage has been recorded for this user yet.</p>
+        {% endif %}
     </div>
 
     <div class="content-section">
         <h2>Projects in which is user involved</h2>
+        {% if projects %}
         <div class="chats">
             {{ charts.ProjectFromUserChart }}
         </div>
+        {% else %}
+        <p>This user is not linked to a project yet.</p>
+        {% endif %}
     </div>
 
     <script type="text/javascript">

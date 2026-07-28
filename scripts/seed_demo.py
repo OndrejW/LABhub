@@ -174,6 +174,22 @@ def main():
         )
         get_or_create(
             Log,
+            name="Calibration cross-check",
+            user_id=colleague.id,
+            typeOfOcc=0,
+            defaults={
+                "date": now - timedelta(hours=22),
+                "idea": "Confirm the optical bench response after the readiness checks.",
+                "comment": "The reference reading matched the expected range.",
+                "path": "demo-data/calibration-cross-check.csv",
+                "attribute": "Reference signal,1.02 a.u.\nStatus,Passed\n",
+                "setup_id": setup.id,
+                "project_id": readiness_project.id,
+                "session_id": readiness_session.id,
+            },
+        )
+        get_or_create(
+            Log,
             name="Temperature controller drift warning",
             user_id=demo_user.id,
             typeOfOcc=2,

@@ -129,21 +129,24 @@ def user_info(user_id):
     form = LimitLogsUser()
     image_file = url_for('static', filename='profile_pics/' + user.image_file)
     # Pie chart of used setups and Projects
-    usedSetupsbyUser = db.session.query(Setup.name, db.func.count(Log.setup_id)).join(Log, Setup.id == Log.setup_id).group_by(Setup.name).filter_by(user_id=user.id).all()
-    setupsUsedByUserChart = PieChart("setupsUsedByUserChart", options={"width": '100%', "height": 500})
-    setupsUsedByUserChart .add_column("string", "Setups")
-    setupsUsedByUserChart .add_column("number", "Number of measurements")
-    setupsUsedByUserChart .add_rows(usedSetupsbyUser)
-    charts.register(setupsUsedByUserChart)
+    involvement = or_(Log.user_id == user.id, LogCooperators.user_id == user.id)
+    usedSetupsbyUser = db.session.query(Setup.name, db.func.count(db.distinct(Log.id))).join(Log, Setup.id == Log.setup_id).outerjoin(LogCooperators, LogCooperators.log_id == Log.id).filter(involvement).group_by(Setup.name).all()
+    if usedSetupsbyUser:
+        setupsUsedByUserChart = PieChart("setupsUsedByUserChart", options={"width": '100%', "height": 500})
+        setupsUsedByUserChart.add_column("string", "Setups")
+        setupsUsedByUserChart.add_column("number", "Number of measurements")
+        setupsUsedByUserChart.add_rows(usedSetupsbyUser)
+        charts.register(setupsUsedByUserChart)
 
-    ProjectFromUser = db.session.query(Project.name, db.func.count(Log.project_id)).join(Log, Project.id == Log.project_id).group_by(Project.name).filter_by(user_id=user.id).all()
-    ProjectFromUserChart = PieChart("ProjectFromUserChart", options={"width": '100%', "height": 500})
-    ProjectFromUserChart .add_column("string", "Setups")
-    ProjectFromUserChart .add_column("number", "Number of measurements")
-    ProjectFromUserChart .add_rows(ProjectFromUser)
-    charts.register(ProjectFromUserChart)   
+    ProjectFromUser = db.session.query(Project.name, db.func.count(db.distinct(Log.id))).join(Log, Project.id == Log.project_id).outerjoin(LogCooperators, LogCooperators.log_id == Log.id).filter(involvement).group_by(Project.name).all()
+    if ProjectFromUser:
+        ProjectFromUserChart = PieChart("ProjectFromUserChart", options={"width": '100%', "height": 500})
+        ProjectFromUserChart.add_column("string", "Projects")
+        ProjectFromUserChart.add_column("number", "Number of records")
+        ProjectFromUserChart.add_rows(ProjectFromUser)
+        charts.register(ProjectFromUserChart)
 
-    return render_template('userinfo.html', title='User info', image_file=image_file, user=user, form=form)
+    return render_template('userinfo.html', title='User info', image_file=image_file, user=user, form=form, used_setups=usedSetupsbyUser, projects=ProjectFromUser)
 
 @app.route("/users")
 @login_required
