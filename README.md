@@ -37,6 +37,7 @@ LABhub reads deploy-time configuration from environment variables:
 - `LABHUB_DATABASE_URI`: SQLAlchemy database URL, defaulting to local SQLite.
 - `LABHUB_LOG_FILE`: optional app log path.
 - `LABHUB_SEED_DEMO_DATA`: set to `true` to create the public demo account and sample records.
+- `LABHUB_AUTO_LOGIN_DEMO`: set to `true` only for a public demo to sign visitors into that account automatically.
 
 Do not commit real `.env` files or production databases.
 

@@ -9,10 +9,10 @@ from datetime import timedelta
 if not hasattr(collections, 'MutableMapping'):
     collections.MutableMapping = collections.abc.MutableMapping
 
-from flask import Flask, session
+from flask import Flask, request, session
 from flask import send_file
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_whooshee import Whooshee
 from flask_nav import register_renderer
@@ -46,6 +46,8 @@ app.secret_key = os.environ.get('LABHUB_SECRET_KEY', 'dev-only-change-me')
 app.permanent_session_lifetime = SESSIONLIFETIME
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('LABHUB_DATABASE_URI', 'sqlite:///site.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['LABHUB_AUTO_LOGIN_DEMO'] = os.environ.get('LABHUB_AUTO_LOGIN_DEMO', '').lower() in {'1', 'true', 'yes'}
+app.config['LABHUB_DEMO_EMAIL'] = os.environ.get('LABHUB_DEMO_EMAIL', 'demo@labhub.example')
 db = SQLAlchemy(app)
 whooshee = Whooshee(app)
 bcrypt = Bcrypt(app)
@@ -63,6 +65,19 @@ nav.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = 'info'
+
+
+@app.before_request
+def auto_login_demo_user():
+    if request.endpoint == 'static' or current_user.is_authenticated or not app.config['LABHUB_AUTO_LOGIN_DEMO']:
+        return
+
+    from labhub.lib.models import User
+
+    demo_user = User.query.filter_by(email=app.config['LABHUB_DEMO_EMAIL']).first()
+    if demo_user:
+        login_user(demo_user)
+
 
 import labhub.routes
 

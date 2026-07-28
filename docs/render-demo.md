@@ -57,6 +57,8 @@ Sign in with the public demo account:
 
 The account already includes a sample, setup, two projects and sessions, measurement logs, notes, a warning, a collaborator remark, and an analysis. You can add and edit records freely; this is intentionally a public demonstration account.
 
+The included Render configuration signs visitors into this public account automatically. The email and password remain available above if you turn off `LABHUB_AUTO_LOGIN_DEMO` or use a different deployment configuration.
+
 ## Demo Limitations
 
 - Free Render web services can spin down when idle.
@@ -79,3 +81,4 @@ If you create a normal Render web service instead of a Blueprint, use:
   - `LABHUB_DATABASE_URI=sqlite:///site.db`
   - `LABHUB_LOG_FILE=logs/error.log`
   - `LABHUB_SEED_DEMO_DATA=true`
+  - `LABHUB_AUTO_LOGIN_DEMO=true`

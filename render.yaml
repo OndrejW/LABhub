@@ -16,3 +16,5 @@ services:
         value: logs/error.log
       - key: LABHUB_SEED_DEMO_DATA
         value: "true"
+      - key: LABHUB_AUTO_LOGIN_DEMO
+        value: "true"
