@@ -65,7 +65,13 @@ waitress-serve --host=127.0.0.1 --port=8000 wsgi:app
 
 Put a reverse proxy in front of it for TLS, compression, request size limits, and access controls. Document the final URL, proxy config, service manager, restart command, and log locations for your deployment.
 
-## 7. Backups
+## 7. Render Demo
+
+For a simple public demo, use the included `render.yaml` Blueprint and follow [Render Demo Deployment](render-demo.md).
+
+The demo configuration uses SQLite on the service filesystem. Treat demo data as temporary unless you add persistent storage.
+
+## 8. Backups
 
 Back up both the database and uploaded files:
 

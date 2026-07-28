@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: labhub-demo
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/init_db.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.14
+      - key: LABHUB_SECRET_KEY
+        generateValue: true
+      - key: LABHUB_DATABASE_URI
+        value: sqlite:///site.db
+      - key: LABHUB_LOG_FILE
+        value: logs/error.log

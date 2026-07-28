@@ -5,6 +5,7 @@ LABhub is an online lab notebook for organizing measurements, notes, analyses, p
 ## Documentation
 
 - [Deployment guide](docs/deployment.md): install, configure, initialize, run, and deploy LABhub.
+- [Render demo guide](docs/render-demo.md): publish a temporary online demo on Render.
 - [User guide](docs/user-guide.md): core concepts and daily workflows.
 - [Developer guide](docs/developer-guide.md): project layout, routes, config, compatibility notes.
 - [Operations checklist](docs/operations-checklist.md): smoke tests, backup/restore, security checks.
