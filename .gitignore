@@ -11,6 +11,9 @@ labhub/static/log/
 labhub/static/profile_pics/
 labhub/static/sample/
 labhub/static/setup/
+!labhub/static/profile_pics/
+labhub/static/profile_pics/*
+!labhub/static/profile_pics/default.jpg
 labhub/.p4root/
 labhub/site.db
 labhub/lib/labhub/site.db
