@@ -33,7 +33,6 @@
     <!-- Google charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    {{ charts_init }}
     <!-- Others -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -89,6 +88,7 @@
             {% endif %}
           {% endwith %}
           {% block content %}{% endblock %}
+          {{ charts_init }}
         </div>
         <div class="col-md-4 d-print-none" id="rightBar">
           <div class="content-section">

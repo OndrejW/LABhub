@@ -10,6 +10,7 @@ if not hasattr(collections, 'MutableMapping'):
     collections.MutableMapping = collections.abc.MutableMapping
 
 from flask import Flask, session
+from flask import send_file
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -18,10 +19,23 @@ from flask_nav import register_renderer
 from flask_jsglue import JSGlue
 from flask_qrcode import QRcode
 from flask_googlecharts import GoogleCharts
+import pkg_resources
 
 from labhub.navigation import nav, TopMenuRenderer, RightMenuRenderer
 
 import logging
+
+
+def serve_googlecharts_init():
+    chart_script = pkg_resources.resource_stream("flask_googlecharts", "static/charts.init.js")
+    try:
+        return send_file(chart_script, download_name="charts.init.js", mimetype="application/javascript")
+    except TypeError:
+        return send_file(chart_script, attachment_filename="charts.init.js", mimetype="application/javascript")
+
+
+# Flask-GoogleCharts still uses Flask's removed attachment_filename argument.
+GoogleCharts._get_static_init = staticmethod(serve_googlecharts_init)
 
 SESSIONLIFETIME = timedelta(minutes=60)
 os.makedirs('logs', exist_ok=True)
