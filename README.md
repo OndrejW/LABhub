@@ -4,6 +4,7 @@ LABhub is an online lab notebook for organizing measurements, notes, analyses, p
 
 ### Check the live demo [here](https://labhub-demo.onrender.com/) 
 Email: demo@labhub.example
+
 Password: DemoLab123!
 
 ## Documentation
