@@ -3,7 +3,6 @@
 
 import os
 import secrets
-import imghdr
 import base64
 import urllib.parse
 import csv

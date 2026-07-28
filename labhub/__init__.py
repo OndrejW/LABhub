@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import collections
+import collections.abc
 from datetime import timedelta
+
+if not hasattr(collections, 'MutableMapping'):
+    collections.MutableMapping = collections.abc.MutableMapping
 
 from flask import Flask, session
 from flask_bcrypt import Bcrypt
