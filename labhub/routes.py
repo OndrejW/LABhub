@@ -447,7 +447,7 @@ def _listLogsFiltered():
     tLog = request.values.get('tLog')
     tInfo = request.values.get('tInfo')
     ftSearch = request.values.get('ftSearch')
-    lastXdays = int(request.values.get('lastXdays'))
+    lastXdays = request.values.get('lastXdays', type=int)
     idUsr = request.values.get('idUsr')
     query = Log.query
     if idProject and idProject != '__None':
@@ -471,8 +471,7 @@ def _listLogsFiltered():
         query = query.filter(Log.date >= X_days_ago)
     if idUsr and idUsr != '__None':
         query = query.filter_by(user_id=idUsr)
-    else:
-        query = query.order_by(desc('date'))
+    query = query.order_by(desc(Log.date), desc(Log.id))
     if limit and limit != '__None':
         query = query.limit(limit)
 

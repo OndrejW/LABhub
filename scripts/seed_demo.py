@@ -130,7 +130,7 @@ def main():
             user_id=demo_user.id,
             typeOfOcc=0,
             defaults={
-                "date": now - timedelta(days=2, hours=-1),
+                "date": now - timedelta(days=2),
                 "idea": "Record the reference signal before changing temperature.",
                 "comment": "Three readings agreed within the expected repeatability.",
                 "path": "demo-data/baseline-25c.csv",
