@@ -34,6 +34,7 @@ LABhub reads deploy-time configuration from environment variables:
 - `LABHUB_SECRET_KEY`: required for real deployments.
 - `LABHUB_DATABASE_URI`: SQLAlchemy database URL, defaulting to local SQLite.
 - `LABHUB_LOG_FILE`: optional app log path.
+- `LABHUB_SEED_DEMO_DATA`: set to `true` to create the public demo account and sample records.
 
 Do not commit real `.env` files or production databases.
 

@@ -11,7 +11,7 @@ The repository includes `render.yaml`, a Render Blueprint file. It defines:
 - a Python web service named `labhub-demo`
 - the free Render service plan
 - `pip install -r requirements.txt` as the build command
-- `python scripts/init_db.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app` as the start command
+- `python scripts/init_db.py && python scripts/seed_demo.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app` as the start command
 - an automatically generated `LABHUB_SECRET_KEY`
 - a local SQLite database for demo use
 
@@ -50,13 +50,12 @@ https://labhub-demo.onrender.com
 
 Open the Render URL.
 
-1. Register a test user.
-2. Log in.
-3. Create a setup.
-4. Create a sample.
-5. Create a project.
-6. Create a session.
-7. Add a log or note.
+Sign in with the public demo account:
+
+- **Email:** `demo@labhub.example`
+- **Password:** `DemoLab123!`
+
+The account already includes a sample, setup, two projects and sessions, measurement logs, notes, a warning, a collaborator remark, and an analysis. You can add and edit records freely; this is intentionally a public demonstration account.
 
 ## Demo Limitations
 
@@ -73,9 +72,10 @@ If you create a normal Render web service instead of a Blueprint, use:
 
 - **Runtime:** Python
 - **Build command:** `pip install -r requirements.txt`
-- **Start command:** `python scripts/init_db.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app`
+- **Start command:** `python scripts/init_db.py && python scripts/seed_demo.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app`
 - **Environment variables:**
   - `PYTHON_VERSION=3.10.14`
   - `LABHUB_SECRET_KEY`: generate a secret value
   - `LABHUB_DATABASE_URI=sqlite:///site.db`
   - `LABHUB_LOG_FILE=logs/error.log`
+  - `LABHUB_SEED_DEMO_DATA=true`
