@@ -38,16 +38,16 @@ Do not commit real `.env` files or production databases.
 
 ## Core Data Model
 
-**Logs/notes** can be grouped into **projects** or created without a project. A project should follow a scientific goal, such as investigating spin-wave propagation through domain walls.
+**Logs/notes** can be grouped into **projects** or created without a project. A project should follow a scientific goal, instrument campaign, sample series, or other coherent lab activity.
 
 Projects can contain **sessions**. Sessions group measurements that belong to the same campaign or short-term objective. Logs can also exist directly under a project, but session-based organization is recommended.
 
-![dataStructure](https://github.com/OndrejW/LABhub/assets/6682213/8253429d-8842-45a4-bc1b-62cd61ece186)
+![Core data model](labhub/static/manual/dataStructure.png)
 
 ## Log Structure
 
 A log records the measurement idea, comments, data path, setup, sample, optional structure, attributes, cooperators, and images.
 
-Each setup can define reusable attributes, such as laser power. Images can be added to logs and given titles.
+Each setup can define reusable attributes, such as temperature, pressure, voltage, sample position, instrument mode, or any other repeated measurement parameter. Images can be added to logs and given titles.
 
-![logStructure](https://github.com/OndrejW/LABhub/assets/6682213/e1ecb884-9c3b-4d90-90e6-4cdd2462a245)
+![Log structure](labhub/static/manual/logStructure.png)
