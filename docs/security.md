@@ -21,3 +21,19 @@ Uploaded images and files are stored under `labhub/static`. Production deploymen
 ## External Services
 
 Do not add external-service integrations until the data flow is approved for the deployment environment.
+
+## Hardening Settings
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LABHUB_SECRET_KEY` | random per process | Must be set in production; without it sessions reset on every restart. |
+| `LABHUB_SECURE_COOKIES` | `false` | Set to `true` behind HTTPS so session and remember-me cookies are marked `Secure`. |
+| `LABHUB_MAX_UPLOAD_MB` | `32` | Requests larger than this are rejected with HTTP 413. |
+| `LABHUB_LOG_LEVEL` | `INFO` | Avoid `DEBUG` in production; it can log request data. |
+| `LABHUB_DEBUG` | `false` | Enables the Werkzeug debugger for `runserver.py`. Never enable it on a reachable host. |
+
+Destructive AJAX actions (deleting log images and remarks) accept `POST` only and require the `X-CSRFToken` header. Only the log's operator or a cooperator can delete its images.
+
+## Dependency Audits
+
+Run `pip-audit -r requirements.txt` before each deployment. As of October 2026, Werkzeug (<3.1.9) and Flask (<3.1.3) still have open advisories that require the Flask 3 migration; setuptools stays pinned below 81 because Flask-GoogleCharts relies on `pkg_resources`. Pillow 13 requires Python 3.11 or newer.

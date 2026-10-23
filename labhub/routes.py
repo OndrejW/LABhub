@@ -14,6 +14,9 @@ from flask import render_template, redirect, url_for, request, flash, jsonify, g
 from flask_paginate import Pagination
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_googlecharts import PieChart
+from flask_wtf.csrf import validate_csrf
+from wtforms.validators import ValidationError
+from werkzeug.exceptions import abort
 from datetime import datetime, timedelta
 
 
@@ -54,6 +57,27 @@ def reindex():
 # User
 ##################
 
+def is_safe_redirect(target):
+    """Only allow redirects to local paths (blocks open redirects via ?next=)."""
+    if not target:
+        return False
+    target = target.replace('\\', '/')
+    parts = urllib.parse.urlparse(target)
+    return not parts.scheme and not parts.netloc and target.startswith('/') and not target.startswith('//')
+
+
+def require_csrf_header():
+    """Validate the CSRF token sent by AJAX calls in the X-CSRFToken header."""
+    try:
+        validate_csrf(request.headers.get('X-CSRFToken', ''))
+    except ValidationError:
+        abort(400)
+
+
+ALLOWED_PICTURE_EXT = {'.jpg', '.jpeg', '.png'}
+ALLOWED_MANUAL_EXT = {'.pdf', '.pptx'}
+
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -64,7 +88,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            return redirect(next_page) if is_safe_redirect(next_page) else redirect(url_for('index'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -92,6 +116,9 @@ def logout():
 def save_profile_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
+    f_ext = f_ext.lower()
+    if f_ext not in ALLOWED_PICTURE_EXT:
+        f_ext = '.png'
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
 
@@ -347,9 +374,10 @@ def add_RemarkToLog(log_id):
     # elif request.method == 'GET':
     return render_template('addRemarkToLog.html', title='Add remark to log', form=form, legend='Add remark to log')
 
-@app.route("/remark/<int:remark_id>/delete", methods=['GET', 'POST'])
+@app.route("/remark/<int:remark_id>/delete", methods=['POST'])
 @login_required
 def delete_remark(remark_id):
+    require_csrf_header()
     remark = LogRemark.query.get_or_404(remark_id)
     if current_user.id == remark.user_id:
         db.session.delete(remark)
@@ -360,10 +388,15 @@ def delete_remark(remark_id):
         flash('Remark wasn\'t deleted! You are allowed to delete only yours remarks!', 'warning')
         return redirect(url_for('log', log_id=remark.log_id))
 
-@app.route("/image/<int:image_id>/delete", methods=['GET', 'POST'])
+@app.route("/image/<int:image_id>/delete", methods=['POST'])
 @login_required
 def delete_logImage(image_id):
+    require_csrf_header()
     image = LogImages.query.get_or_404(image_id)
+    log = Log.query.get_or_404(image.log_id)
+    allowed_users = {log.user_id} | {c.user_id for c in log.cooperators}
+    if current_user.id not in allowed_users:
+        abort(403)
     db.session.delete(image)
     db.session.commit()
     flash('Image was deleted!', 'success')
@@ -606,6 +639,9 @@ def setup(setup_id):
 def save_file(form_manual, setupID):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_manual.filename)
+    f_ext = f_ext.lower()
+    if f_ext not in ALLOWED_MANUAL_EXT:
+        abort(400)
     manual_fn = random_hex + f_ext
     dirP = os.path.join(app.root_path, 'static\\setup\\', str(setupID))
     if not os.path.exists(dirP):
@@ -1217,7 +1253,7 @@ def addOccasionToSession(session_id):
         if request.form.getlist('image[]'):
             i = 0
             for image in request.form.getlist('image[]'):
-                picture_file = save_log_picture(image, form.name.data)
+                picture_file = save_log_picture(image, log.id)
                 logImages = LogImages(log_id=log.id, title=request.form.getlist('imageTitle[]')[i], path=picture_file)
                 i = i + 1
                 db.session.add(logImages)

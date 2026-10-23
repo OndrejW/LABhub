@@ -76,7 +76,7 @@ If you create a normal Render web service instead of a Blueprint, use:
 - **Build command:** `pip install -r requirements.txt`
 - **Start command:** `python scripts/init_db.py && python scripts/seed_demo.py && waitress-serve --host=0.0.0.0 --port=$PORT wsgi:app`
 - **Environment variables:**
-  - `PYTHON_VERSION=3.10.14`
+  - `PYTHON_VERSION=3.12.11`
   - `LABHUB_SECRET_KEY`: generate a secret value
   - `LABHUB_DATABASE_URI=sqlite:///site.db`
   - `LABHUB_LOG_FILE=logs/error.log`

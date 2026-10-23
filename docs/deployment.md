@@ -4,7 +4,7 @@ This guide describes the minimum work needed to run LABhub outside the original 
 
 ## 1. Prerequisites
 
-- Python 3.8 or newer is recommended.
+- Python 3.11 or newer is required (Pillow 13); 3.12 is recommended.
 - A virtual environment or Conda environment.
 - Network access to the JavaScript CDNs used by `labhub/templates/base.html`, unless those assets are vendored later.
 - A database location that is backed up. The default is SQLite, but production deployments should choose and document their own storage policy.

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import secrets
 import collections
 import collections.abc
 from datetime import timedelta
@@ -9,8 +10,17 @@ from datetime import timedelta
 if not hasattr(collections, 'MutableMapping'):
     collections.MutableMapping = collections.abc.MutableMapping
 
+# Jinja2 3.1 removed Markup/escape; Flask-JSGlue and other legacy extensions still import them.
+import jinja2
+import markupsafe
+if not hasattr(jinja2, 'Markup'):
+    jinja2.Markup = markupsafe.Markup
+if not hasattr(jinja2, 'escape'):
+    jinja2.escape = markupsafe.escape
+
 from flask import Flask, request, session
 from flask import send_file
+from flask_wtf.csrf import generate_csrf
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
@@ -39,10 +49,29 @@ GoogleCharts._get_static_init = staticmethod(serve_googlecharts_init)
 
 SESSIONLIFETIME = timedelta(minutes=60)
 os.makedirs('logs', exist_ok=True)
-logging.basicConfig(filename=os.environ.get('LABHUB_LOG_FILE', 'logs/error.log'),level=logging.DEBUG)
+logging.basicConfig(
+    filename=os.environ.get('LABHUB_LOG_FILE', 'logs/error.log'),
+    level=getattr(logging, os.environ.get('LABHUB_LOG_LEVEL', 'INFO').upper(), logging.INFO),
+)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('LABHUB_SECRET_KEY', 'dev-only-change-me')
+app.secret_key = os.environ.get('LABHUB_SECRET_KEY')
+if not app.secret_key:
+    app.secret_key = secrets.token_urlsafe(48)
+    logging.warning('LABHUB_SECRET_KEY is not set; using a random per-process key (sessions reset on restart).')
+
+def _env_flag(name):
+    return os.environ.get(name, '').lower() in {'1', 'true', 'yes'}
+
+# Reject request bodies larger than this (pasted log images arrive as base64 form fields).
+app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('LABHUB_MAX_UPLOAD_MB', '32')) * 1024 * 1024
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
+# Enable when served over HTTPS so cookies are never sent in clear text.
+app.config['SESSION_COOKIE_SECURE'] = _env_flag('LABHUB_SECURE_COOKIES')
+app.config['REMEMBER_COOKIE_SECURE'] = _env_flag('LABHUB_SECURE_COOKIES')
 app.permanent_session_lifetime = SESSIONLIFETIME
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('LABHUB_DATABASE_URI', 'sqlite:///site.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -80,6 +109,20 @@ def auto_login_demo_user():
 
 
 import labhub.routes
+
+
+@app.context_processor
+def inject_csrf_token():
+    # Lets templates and AJAX calls send a CSRF token without a form object.
+    return {'csrf_token': generate_csrf}
+
+
+@app.after_request
+def set_security_headers(response):
+    response.headers.setdefault('X-Content-Type-Options', 'nosniff')
+    response.headers.setdefault('X-Frame-Options', 'SAMEORIGIN')
+    response.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+    return response
 
 @app.before_request
 def before_request():
